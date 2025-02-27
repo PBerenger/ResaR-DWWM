@@ -1,0 +1,61 @@
+/* Mode sombre */
+body.dark-mode {
+    background-color: var(--dark-background);
+    color: var(--dark-title);
+}
+
+body.dark-mode main {
+    background-color: var(--dark-secondary-background);
+}
+
+/* Option pour le bouton dans la barre de navigation */
+#dark-mode-toggle {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: transparent;
+        color: var(--secondary-title);
+    }
+}
+
+body.dark-mode footer {
+    background-color: var(--dark-secondary-background);
+    color: var(--dark-fonts);
+}
+
+body.dark-mode h2 {
+    color: var(--dark-title);
+    /* Couleur pour le mode sombre */
+}
+
+body.dark-mode .restaurant-card {
+    background-color: var(--dark-secondary-background);
+    /* Changer la couleur de fond en mode sombre */
+    color: var(--dark-fonts);
+
+    h3 {
+        color: var(--dark-title);
+    }
+}
+
+
+//==================================================|
+// RESPONSIVES -------------------------------------|
+//==================================================|
+
+@media (max-width: 768px) {
+    body.dark-mode #dark-mode-toggle {
+        font-size: 1.2rem;
+    }
+
+    body.dark-mode footer {
+        font-size: 12px;
+    }
+
+    body.dark-mode .restaurant-card {
+        padding: 10px;
+    }
+}

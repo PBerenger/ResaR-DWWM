@@ -1,0 +1,88 @@
+@import 'style.css';
+.restaurants-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.restaurants-details-container .restaurant-photo-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+.restaurants-details-container .restaurant-details-bottom {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+.restaurants-details-container .restaurant-profile-card {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-background);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.restaurants-details-container .restaurant-profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.restaurants-details-container .restaurant-infos {
+  flex: 1;
+}
+.dishes-container {
+  margin-top: 20px;
+}
+.dishes-container .dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* 3 cartes par ligne sur les grands écrans */
+  gap: 20px;
+  padding: 10px;
+}
+.dishes-container .dish-card {
+  background: var(--primary-background);
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  text-align: center;
+}
+.dishes-container .dish-card .dish-photo {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.dishes-container .dish-card .dish-info {
+  margin-top: 10px;
+}
+.dishes-container .dish-card .dish-info h3 {
+  font-size: 1.2em;
+  color: var(--primary-tiFtle);
+}
+.dishes-container .dish-card .dish-info p {
+  color: var(--primary-fonts);
+  font-size: 1em;
+  margin: 5px 0;
+}
+.dishes-container .dish-card .dish-info strong {
+  font-size: 1.2em;
+  color: var(--primary-fonts);
+}
+/* Media Query pour les petits écrans */
+@media (max-width: 768px) {
+  .dishes-container .dishes-grid {
+    grid-template-columns: 1fr;
+  }
+}

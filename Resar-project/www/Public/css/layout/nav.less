@@ -1,0 +1,285 @@
+//==================================================|
+// NAV-BAR------------------------------------------|
+//==================================================|
+
+/* En-tête */
+header {
+    background-color: var(--primary-color);
+    color: var(--third-color);
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+
+        ul {
+            justify-content: flex-end;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+
+            input {
+                background: none;
+                color: var(--third-color);
+                border: none;
+                outline: none;
+                padding: 10px;
+                font-size: 16px;
+                width: 300px;
+                border-bottom: 2px solid var(--primary-background);
+            }
+        }
+
+        .user-status {
+            margin-right: 20px;
+            font-size: 1.5rem;
+        }
+    }
+}
+
+// menu d'inscription
+.register-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 300px;
+    height: 100%;
+    background: var(--third-color);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+
+    .logo2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        margin: 0 auto;
+    }
+
+    h1,
+    h2,
+    h4,
+    p {
+        margin: unset;
+        text-align: center;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    input {
+        background-color: var(--primary-background);
+        padding: 5px;
+        border: 1px solid var(--primary-color);
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+
+        &:focus {
+            border-color: var(--primary-color);
+        }
+    }
+
+    button {
+        padding: 5px;
+        border: none;
+        border-radius: 6px;
+        background-color: var(--primary-color);
+        color: var(--third-color);
+        font-size: 16px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--secondary-color);
+        }
+    }
+
+    .google-signin {
+        color: var(--secondary-fonts);
+        background: var(--secondary-background);
+        border: 1px solid var(--secondary-fonts);
+
+        &:hover {
+            color: var(--third-color);
+            background: #db4437;
+            border: 1px solid #db4437;
+        }
+    }
+}
+
+.register-menu.active {
+    right: 0;
+}
+
+/* Pour le logo */
+.logo1 {
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    img {
+        height: 40px;
+    }
+}
+
+.logo2 {
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    img {
+        height: 40px;
+    }
+}
+
+/* Menu burger */
+.menu-toggle {
+    display: none;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--third-color);
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+/* Positionner la croix sur le même emplacement que le bouton du menu burger */
+/* Par défaut, masquer la croix */
+.close-menu {
+    display: none;
+    font-size: 3rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--third-color);
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+//==================================================|
+// RESPONSIVES -------------------------------------|
+//==================================================|
+
+@media screen and (max-width: 768px) {
+
+    .logo1 {
+        img {
+            display: none;
+        }
+    }
+    .menu-toggle {
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* Masquer le burger et afficher la croix lorsque le menu est ouvert */
+    .nav-links.active {
+        display: flex;
+    }
+    
+    .close-menu.active {
+        display: block;
+    }
+    
+    /* Afficher la croix quand le menu est ouvert */
+    .nav-links.active + .close-btn {
+        display: block;
+    }
+    
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: var(--primary-color);
+        z-index: 1000;
+        
+        #btn-general {
+            background-color: var(--secondary-color);
+            margin: 0;
+        }
+
+        #dark-mode-toggle {
+            display: none; /* Masquer le logo du mode sombre */
+        }
+    }
+
+}
+
+/* Responsive pour la barre de navigation */
+@media (max-width: 768px) {
+    header {
+        nav {
+            flex-direction: column;
+            align-items: flex-start;
+
+            ul {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .search-bar-nav {
+                width: 100%;
+            }
+        }
+    }
+
+    .register-menu {
+        width: 100%;
+    }
+
+    .user-status {
+        font-size: 1.2rem;
+    }
+}
