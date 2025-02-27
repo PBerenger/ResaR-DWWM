@@ -1,3 +1,95 @@
+.rrestaurant-top form {
+  padding: 20px;
+}
+.rrestaurant-top form .section-personnel,
+.rrestaurant-top form .section-restaurant {
+  width: 100%;
+  max-width: 500px;
+  height: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--primary-background);
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.rrestaurant-top form .section-personnel input,
+.rrestaurant-top form .section-restaurant input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: none;
+  color: var(--primary-color);
+  font-size: 16px;
+  margin: 10px;
+}
+.rrestaurant-top form .section-personnel .section-personnel,
+.rrestaurant-top form .section-restaurant .section-personnel {
+  display: block;
+}
+.rrestaurant-top form .section-personnel .button-container,
+.rrestaurant-top form .section-restaurant .button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+.rrestaurant-top form .section-personnel textarea,
+.rrestaurant-top form .section-restaurant textarea {
+  padding: 12px;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background-color: var(--secondary-background);
+  color: var(--primary-color);
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  resize: vertical;
+  min-height: 100px;
+  max-height: 300px;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+.rrestaurant-top form .section-personnel textarea:focus,
+.rrestaurant-top form .section-restaurant textarea:focus {
+  border-color: var(--tertiary-color);
+  background-color: var(--tertiary-background);
+  outline: none;
+}
+.rrestaurant-top form .next-btn,
+.rrestaurant-top form .prev-btn,
+.rrestaurant-top form .submitRestaurant {
+  padding: 10px;
+  width: 50%;
+  margin: 0 auto;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary-color);
+  color: var(--third-color);
+  font-size: 16px;
+  cursor: pointer;
+}
+.rrestaurant-top form .next-btn:hover,
+.rrestaurant-top form .prev-btn:hover,
+.rrestaurant-top form .submitRestaurant:hover {
+  background-color: var(--secondary-color);
+}
+@media (max-width: 768px) {
+  .section-personnel,
+  .section-restaurant {
+    width: 100%;
+    max-width: none;
+  }
+  input,
+  .submitRestaurant {
+    font-size: 14px;
+  }
+}
 .rrestaurant-bot .rrestaurant-img-background {
   margin-top: 20px;
   background-image: url('/assets/img/table1.jpg');
@@ -21,18 +113,16 @@
   gap: 20px;
   justify-content: center;
   flex-wrap: nowrap;
-  /* Empêche le retour à la ligne */
 }
 .rrestaurant-mid .reason1,
 .rrestaurant-mid .reason2,
 .rrestaurant-mid .reason3,
 .rrestaurant-mid .reason4 {
   flex: 1;
-  /* Chaque bloc prend une part égale de l'espace */
   min-width: 250px;
   max-width: 300px;
   text-align: left;
-  background-color: #f8f8f8;
+  background-color: var(--primary-background);
   padding: 15px;
   border-radius: 8px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);

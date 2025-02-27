@@ -1,3 +1,104 @@
+.rrestaurant-top {
+    form {
+        padding: 20px;
+
+        .section-personnel,
+        .section-restaurant {
+            width: 100%;
+            max-width: 500px;
+            height: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--primary-background);
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            input {
+                width: 100%;
+                padding: 10px;
+                border: none;
+                border-radius: 6px;
+                background-color: none;
+                color: var(--primary-color);
+                font-size: 16px;
+                margin: 10px;
+            }
+
+            .section-personnel {
+                display: block;
+            }
+
+            .button-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;  // Centrer horizontalement
+                gap: 10px;  // Espacement entre les boutons
+                width: 100%;
+            }
+
+            textarea {
+                padding: 12px;
+                border: 2px solid var(--primary-color);   // Bordure colorée
+                border-radius: 8px;  // Coins arrondis
+                background-color: var(--secondary-background); // Arrière-plan personnalisé
+                color: var(--primary-color);  // Couleur du texte
+                font-size: 16px;  // Taille du texte
+                font-family: Arial, sans-serif;  // Police personnalisée
+                resize: vertical;  // Permet de redimensionner verticalement (enlever si tu ne veux pas de redimensionnement)
+                min-height: 100px; // Hauteur minimale
+                max-height: 300px;  // Hauteur maximale
+                width: 100%;  // Prendre toute la largeur du conteneur
+                margin-bottom: 10px;  // Espacement sous le textarea
+                transition: all 0.3s ease;  // Animation pour un effet de transition
+            }
+    
+            textarea:focus {
+                border-color: var(--tertiary-color);  // Changer la bordure au focus
+                background-color: var(--tertiary-background); // Changer l'arrière-plan au focus
+                outline: none;  // Enlever l'outline par défaut
+            }
+        }
+
+        .next-btn,
+        .prev-btn,
+        .submitRestaurant {
+            padding: 10px;
+            width: 50%;
+            margin: 0 auto; // Centrer le bouton
+            border: none;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: var(--third-color);
+            font-size: 16px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--secondary-color);
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .section-personnel,
+    .section-restaurant {
+        width: 100%;
+        max-width: none;  // Laisse la section prendre toute la largeur
+    }
+
+    input,
+    .submitRestaurant {
+        font-size: 14px;  // Réduire la taille des champs et du bouton sur mobile
+    }
+}
+
+
+//----------------------------------------------
+
 .rrestaurant-bot {
     .rrestaurant-img-background {
         margin-top: 20px;
@@ -24,15 +125,18 @@
         display: flex;
         gap: 20px;
         justify-content: center;
-        flex-wrap: nowrap; /* Empêche le retour à la ligne */
+        flex-wrap: nowrap;
     }
 
-    .reason1, .reason2, .reason3, .reason4 {
-        flex: 1; /* Chaque bloc prend une part égale de l'espace */
+    .reason1,
+    .reason2,
+    .reason3,
+    .reason4 {
+        flex: 1;
         min-width: 250px;
         max-width: 300px;
         text-align: left;
-        background-color: #f8f8f8;
+        background-color: var(--primary-background);
         padding: 15px;
         border-radius: 8px;
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
@@ -45,18 +149,26 @@
 
 @media (max-width: 1024px) {
     .reasons-container {
-        flex-wrap: wrap; /* Permet le retour à la ligne sur petits écrans */
+        flex-wrap: wrap;
+        /* Permet le retour à la ligne sur petits écrans */
     }
 
-    .reason1, .reason2, .reason3, .reason4 {
-        width: 50%; /* Deux par ligne sur écrans plus petits */
+    .reason1,
+    .reason2,
+    .reason3,
+    .reason4 {
+        width: 50%;
+        /* Deux par ligne sur écrans plus petits */
     }
 }
 
 @media (max-width: 600px) {
-    .reason1, .reason2, .reason3, .reason4 {
-        width: 100%; /* Une seule colonne sur mobile */
+
+    .reason1,
+    .reason2,
+    .reason3,
+    .reason4 {
+        width: 100%;
+        /* Une seule colonne sur mobile */
     }
 }
-
-

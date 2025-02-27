@@ -5,7 +5,7 @@ namespace App\Controllers\Restaurants;
 use App\Config\DbConnect;
 use App\Models\{User, Restaurant};
 
-class Read
+class ReadRestaurant
 {
     public function execute(array $postData)
     {
@@ -23,10 +23,8 @@ class Read
         if (!empty($_SESSION["USER_ID"])) {
             $user = new User($pdo);
             $user->findUserById($_SESSION["USER_ID"]);
-            $userAdmin = $user->isAdmin();
+            // $userAdmin = $user->isAdmin();
         }
-
-        // Inclure la vue en passant les variables
         require __DIR__ . "/../../Views/Restaurants/restaurants_view.php";
     }
 }

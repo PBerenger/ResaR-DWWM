@@ -18,9 +18,11 @@ spl_autoload_register(function ($class) {
 
 require_once "../Config/DbConnect.php";
 
-use App\Controllers\{User, LoginUser, Restaurants, Home, Search};
+use App\Controllers\{LoginUser, Restaurants, Home, Search};
 use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
+use App\Controllers\User\{ReadUser, UpdateUser};
 use App\Config\DbConnect;
+use App\Models\User;
 
 $pdo = DbConnect::getPDO();
 
@@ -40,7 +42,7 @@ try {
             //case search
 
         case 'restaurants-list':
-            (new Restaurants\Read())->execute($_POST);
+            (new Restaurants\ReadRestaurant())->execute($_POST);
             break;
 
         case 'restaurant-details':
@@ -59,14 +61,18 @@ try {
             }
             break;
 
-
         case 'register-restaurant':
-            // var_dump($_POST);          
             (new RegisterRestaurant())->execute($_POST);
             require '../App/Views/Register/registerRestaurant_view.php';
-
             break;
-            
+
+
+        case 'profil-user':
+            (new ReadUser())->execute($_POST);
+            break;
+
+
+
             //----------------------------------------------------------------------------------
 
 

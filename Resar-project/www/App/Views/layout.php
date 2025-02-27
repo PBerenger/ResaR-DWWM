@@ -39,9 +39,9 @@
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                         <button id="btn-general" onclick="window.location.href='?page=admin'" title="Administration">Administration</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=myProfil'" title="Profil">Profil</button>
+                        <button id="btn-general" onclick="window.location.href='?page=profil-user'" title="Profil Utilisateur">Profil</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=myRestaurant'" title="Mon restaurant">Mon restaurant</button>
+                        <button id="btn-general" onclick="window.location.href='?page=myRestaurant'" title="Profil Restaurateur">Mon restaurant</button>
                     <?php endif; ?>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>

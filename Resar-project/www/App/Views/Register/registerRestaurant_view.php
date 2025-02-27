@@ -5,8 +5,7 @@
         <div class="rrestaurant-présentation">
             <h2>Inscrivez votre restaurant sur</h2>
             <h1><span class="miroir-h">R</span>es<span class="miroir-xy">e</span>R</h1>
-
-            <p>Augmentez vos revenus, dotez-vous d’une meilleure visibilité et fidélisez vos clients en rejoignant nos 55 000 restaurants partenaires déjà réservables sur ResaR, la première plateforme de recherche et de réservation de restaurants en Europe. Testez ResaR Manager, notre logiciel de réservation et de gestion de tables. Visibilité et inscription gratuite. Facturation à l'utilisation : les commissions sont basées sur le nombre de couverts réservés et honorés.</p>
+            <p>Augmentez vos revenus, dotez-vous d’une meilleure visibilité et fidélisez vos clients...</p>
         </div>
 
         <form method="POST" action="?page=register-restaurant">
@@ -19,6 +18,9 @@
                 <input type="tel" name="telephone" pattern="[0-9]{10}" maxlength="10" placeholder="Votre téléphone" value="0123456789" required>
                 <input type="password" name="password" placeholder="Mot de passe" value="Password@456" required>
                 <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" value="Password@456" required>
+                <div class="button-container">
+                    <button type="button" class="next-btn" onclick="showSection('restaurant')">Suivant</button>
+                </div>
             </div>
 
             <!-- Section Informations Restaurant -->
@@ -31,11 +33,12 @@
                 <input type="text" name="country" placeholder="Pays" value="france" required>
                 <input type="hidden" name="role" value="3">
                 <textarea name="description" placeholder="Décrivez votre restaurant"></textarea>
+                <div class="button-container">
+                    <button type="submit" class='submitRestaurant' name="userSubmit">S'inscrire</button>
+                    <button type="button" class="prev-btn" onclick="showSection('personnel')">Précédent</button>
+                </div>
             </div>
-
-            <button type="submit" name="userSubmit">S'inscrire</button>
         </form>
-
     </div>
 
     <div id="rrestaurant-mid" class="rrestaurant-mid">
@@ -69,7 +72,8 @@
         <div class="rrestaurant-img-background"></div>
     </div>
 </main>
-<script src="public/js/script.js"></script>
+
+<script src="./scripts/registerRestaurant.js"></script>
 
 <?php
 $content = ob_get_clean();
