@@ -56,7 +56,7 @@ class RegisterUser
 
                         // Ajouter le rôle 'client' dans la table user_roles
                         $stmtRole = $pdo->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
-                        $stmtRole->execute([$userId, 2]); // '1' pour le rôle 'client'
+                        $stmtRole->execute([$userId, 2]); // '2' pour le rôle 'client'
 
                         // Rediriger après l'inscription réussie
                         header("Location: ?page=success");

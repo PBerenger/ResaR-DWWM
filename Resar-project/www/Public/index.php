@@ -62,7 +62,7 @@ try {
 
         case 'register-restaurant':
             // var_dump($_POST);          
-            (new RegisterRestaurant())->execute($_POST, $_FILES);
+            (new RegisterRestaurant())->execute($_POST);
             require '../App/Views/Register/registerRestaurant_view.php';
 
             break;

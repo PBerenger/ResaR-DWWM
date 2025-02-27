@@ -9,7 +9,8 @@
             <p>Augmentez vos revenus, dotez-vous d’une meilleure visibilité et fidélisez vos clients en rejoignant nos 55 000 restaurants partenaires déjà réservables sur ResaR, la première plateforme de recherche et de réservation de restaurants en Europe. Testez ResaR Manager, notre logiciel de réservation et de gestion de tables. Visibilité et inscription gratuite. Facturation à l'utilisation : les commissions sont basées sur le nombre de couverts réservés et honorés.</p>
         </div>
 
-        <form method="POST" action="?page=register-user">
+        <form method="POST" action="?page=register-restaurant">
+            <!-- Section Informations Personnelles -->
             <div class="section section-personnel">
                 <h3>Vos informations personnelles</h3>
                 <input type="text" name="prenom" placeholder="Prénom" value="Res" required>
@@ -19,33 +20,20 @@
                 <input type="password" name="password" placeholder="Mot de passe" value="Password@456" required>
                 <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" value="Password@456" required>
             </div>
-            <button type="submit" name="userSubmit">S'inscrire</button>
-        </form>
-        <!-- Section Informations Personnelles -->
-        
-        <form method="POST" action="?page=register-restaurant" enctype="multipart/form-data">
+
             <!-- Section Informations Restaurant -->
             <div class="section section-restaurant">
                 <h3>Informations sur votre restaurant</h3>
-                <input type="text" name="nomRestaurant" placeholder="Nom du restaurant" value="ResiTauto" required>
+                <input type="text" name="nomRestaurant" placeholder="Nom du restaurant" value="ResTauto" required>
                 <input type="text" name="address" placeholder="Adresse" value="12 place des roues" required>
                 <input type="text" name="city" placeholder="Ville" value="Lille" required>
                 <input type="text" name="zip_Code" placeholder="Code postal" value="59000" required>
                 <input type="text" name="country" placeholder="Pays" value="france" required>
+                <input type="hidden" name="role" value="3">
                 <textarea name="description" placeholder="Décrivez votre restaurant"></textarea>
             </div>
 
-            <!-- Section Upload -->
-            <div class="section section-upload">
-                <h3>Ajoutez des photos</h3>
-                <label for="photoProfil">Photo de profil :</label>
-                <input type="file" name="photoProfil" accept="image/*">
-
-                <label for="photoRestaurant">Bannière du restaurant :</label>
-                <input type="file" name="photoRestaurant" accept="image/*">
-            </div>
-
-            <button type="submit" name="restaurantSubmit">S'inscrire</button>
+            <button type="submit" name="userSubmit">S'inscrire</button>
         </form>
 
     </div>

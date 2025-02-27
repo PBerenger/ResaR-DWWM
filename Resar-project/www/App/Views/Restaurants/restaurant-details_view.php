@@ -1,14 +1,4 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-ob_start();
-require_once __DIR__ . '/../../../Config/config.php';
-?>
-
-<link rel="stylesheet" href="assets/css/restaurant-details.css">
-<!-- <link rel="stylesheet" href="assets/css/restaurants.css"> ???? -->
+<?php ob_start(); ?>
 
 <main>
     <h2><?= htmlspecialchars($restaurant->getName()); ?></h2>

@@ -112,6 +112,7 @@
             <input type="email" name="email" placeholder="Email" value="bou.ba@gmail.com" required>
             <input type="password" name="password" placeholder="Votre mot de passe" value="Password@123" required>
             <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" value="Password@123" required>
+            <input type="hidden" name="role" value="2">
             <button type="submit" name="userSubmit">S'inscrire</button>
         </form>
     </div>
