@@ -9,7 +9,10 @@ class LoginUser
 {
     public function execute(array $postdata)
     {
-        $validationError = '';
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }   
+        $errorMessage = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($postdata['email']);
@@ -17,7 +20,7 @@ class LoginUser
 
             // Vérification que tous les champs sont remplis
             if (empty($email) || empty($password)) {
-                $validationError = "Tous les champs doivent être remplis.";
+                $errorMessage = "Tous les champs doivent être remplis.";
             } else {
                 $pdo = DbConnect::getPDO();
 
@@ -33,24 +36,23 @@ class LoginUser
                 $user = $stmt->fetch();
 
                 if ($user && password_verify($password, $user['password'])) {
-                    // Connexion réussie, démarrer la session et rediriger
-                    session_start();
 
                     if (empty($_SESSION['csrf_token'])) {
-                        $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Génère un nouveau token CSRF
+                        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                     }
                     $_SESSION['user_id'] = $user['idUsers'];
-                    $_SESSION['role'] = $user['roleName']; // Stocker le rôle dans la session
-                    header("Location: ?page=success"); // Rediriger vers la page d'accueil
+                    $_SESSION['role'] = $user['roleName'];
+                    $_SESSION['success_message'] = "Connexion réussie ! Bienvenue.";
+                    header("Location: ?page=success");
                     exit;
                 } else {
-                    $validationError = "Email ou mot de passe incorrect.";
+                    $errorMessage = "Email ou mot de passe incorrect.";
                 }
             }
 
-            if (!empty($validationError)) {
-                $_SESSION['error_message'] = $validationError;
-                header("Location: ?page=error"); // Rediriger vers la page de connexion avec une erreur
+            if (!empty($errorMessage)) {
+                $_SESSION['error_message'] = $errorMessage;
+                header("Location: ?page=error");
                 exit;
             }
         }

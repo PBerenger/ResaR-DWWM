@@ -5,6 +5,7 @@ body.dark-mode {
 }
 body.dark-mode main {
   background-color: var(--dark-secondary-background);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5) !important;
 }
 /* Option pour le bouton dans la barre de navigation */
 #dark-mode-toggle {
@@ -21,7 +22,14 @@ body.dark-mode footer {
   background-color: var(--dark-secondary-background);
   color: var(--dark-fonts);
 }
-body.dark-mode h2 {
+body.dark-mode h1 {
+  color: var(--secondary-color);
+}
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
   color: var(--dark-title);
   /* Couleur pour le mode sombre */
 }
@@ -32,6 +40,18 @@ body.dark-mode .restaurant-card {
 }
 body.dark-mode .restaurant-card h3 {
   color: var(--dark-title);
+}
+.dark-mode .card-personal-info,
+.dark-mode .card-security-info,
+.dark-mode .card-profile-photo,
+.dark-mode .h2-cardProfil {
+  color: var(--primary-color);
+}
+body.dark-mode .h2-register,
+body.dark-mode .p-register,
+body.dark-mode .reasons-container,
+body.dark-mode .reasons-container h3 {
+  color: var(--primary-color);
 }
 @media (max-width: 768px) {
   body.dark-mode #dark-mode-toggle {

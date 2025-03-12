@@ -66,3 +66,23 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.style.display = 'block'; // Afficher le burger
     });
 });
+
+
+// popup
+
+function closePopup() {
+    document.getElementById("phone-popup").style.display = "none";
+}
+window.onload = function() {
+    if (!document.getElementById("phone-popup")) return; // Si le popup n'existe pas, on n'affiche rien
+    if (sessionStorage.getItem('phoneFilled') === 'true') {
+        document.getElementById("phone-popup").style.display = "none";
+    } else {
+        document.getElementById("phone-popup").style.display = "block";
+    }
+};
+
+function closePopup() {
+    document.getElementById("phone-popup").style.display = "none";
+    sessionStorage.setItem('phoneFilled', 'true'); // Marquer que le téléphone a été rempli
+}

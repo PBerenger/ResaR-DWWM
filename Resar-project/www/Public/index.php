@@ -4,8 +4,6 @@
 ini_set('session.cache_limiter', 'public');
 session_cache_limiter(false);
 
-// var_dump($_SESSION);
-
 // Autoload des classes avec le namespace comme chemin
 spl_autoload_register(function ($class) {
     $class = str_replace("\\", DIRECTORY_SEPARATOR, $class);
@@ -20,7 +18,7 @@ require_once "../Config/DbConnect.php";
 
 use App\Controllers\{LoginUser, Restaurants, Home, Search};
 use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
-use App\Controllers\User\{ReadUser, UpdateUser};
+use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser};
 use App\Config\DbConnect;
 use App\Models\User;
 
@@ -39,7 +37,7 @@ try {
             require '../App/Views/home_view.php';
             break;
 
-            //case search
+        //case search
 
         case 'restaurants-list':
             (new Restaurants\ReadRestaurant())->execute($_POST);
@@ -68,30 +66,36 @@ try {
 
 
         case 'profil-user':
-            (new ReadUser())->execute($_POST);
+            (new ReadUser())->execute();
+            break;
+
+        case 'update-user':
+            $controller = new App\Controllers\User\UpdateUser();
+            $controller->execute($_POST);
             break;
 
 
 
-            //----------------------------------------------------------------------------------
+
+        //----------------------------------------------------------------------------------
 
 
-            // case 'login-owner':
-            //     if (isset($_POST['loginSubmit'])) {
-            //         $loginController = new LoginUser();
-            //         $loginController->execute($_POST);
-            //     }
-            //     break;
+        // case 'login-owner':
+        //     if (isset($_POST['loginSubmit'])) {
+        //         $loginController = new LoginUser();
+        //         $loginController->execute($_POST);
+        //     }
+        //     break;
 
 
-            // case 'admin_restaurant':
-            //     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            //         require '../App/Views/admin_restaurant.php';
-            //     } else {
-            //         header("HTTP/1.1 403 Forbidden");
-            //         echo "Accès refusé.";
-            //     }
-            //     break;
+        // case 'admin_restaurant':
+        //     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        //         require '../App/Views/admin_restaurant.php';
+        //     } else {
+        //         header("HTTP/1.1 403 Forbidden");
+        //         echo "Accès refusé.";
+        //     }
+        //     break;
 
         case 'error':
             require '../App/Views/error.php';

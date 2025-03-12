@@ -1,4 +1,7 @@
-<?php session_start();
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // var_dump($_SESSION);
 ?>
 
@@ -15,6 +18,9 @@
     <link rel="stylesheet" href="/css/restaurants.css">
     <link rel="stylesheet" href="/css/restaurant-details.css">
     <link rel="stylesheet" href="/css/registerRestaurant.css">
+
+    <link rel="stylesheet" href="/css/users/profilUser.css">
+
 </head>
 
 <body>
@@ -41,7 +47,7 @@
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
                         <button id="btn-general" onclick="window.location.href='?page=profil-user'" title="Profil Utilisateur">Profil</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=myRestaurant'" title="Profil Restaurateur">Mon restaurant</button>
+                        <button id="btn-general" onclick="window.location.href='?page=myRestaurant&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">Mon restaurant</button>
                     <?php endif; ?>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
@@ -67,16 +73,14 @@
         <img class="logo2" src="assets/logo/logo2.2.png" alt="Logo-img Accueil">
         <h1><span class="miroir-h">R</span>es<span class="miroir-xy">e</span>R</h1>
 
-        <h2>Connexion</h2>
+        <h2 class="h2-register">Connexion</h2>
 
-        <!-- Affichage des erreurs -->
-        <?php if (!empty($validationError)): ?>
-            <div class="error-message"><?= htmlspecialchars($validationError) ?></div>
-        <?php endif; ?>
 
-        <!-- stockage des erreurs -->
-        <?php if (!empty($_SESSION['error_message'])): ?>
-            <div class="error-message"><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+        <!-- Erreurs -->
+        <?php if (!empty($validationError) || !empty($_SESSION['error_message'])): ?>
+            <div class="error-message">
+                <?= htmlspecialchars($validationError ?? $_SESSION['error_message']) ?>
+            </div>
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 
@@ -87,12 +91,12 @@
             <button type="submit" name="loginSubmit">Se connecter</button>
         </form>
 
-        <p>ou</p>
+        <p class="p-register">ou</p>
         <button class="google-signin">Se connecter avec Google</button>
 
         <div class="separation"></div>
 
-        <h2>Inscription</h2>
+        <h2 class="h2-register">Inscription</h2>
 
         <!-- Affichage des erreurs -->
         <?php if (!empty($validationError)): ?>
@@ -118,12 +122,28 @@
     </div>
 
     <main>
+
         <?= $content ?? '<p>Contenu introuvable. Veuillez sélectionner une page valide.</p>' ?>
     </main>
+
 
     <footer>
         <p>&copy; <?= date('Y') ?> ResaR. Tous droits réservés.</p>
     </footer>
+
+    <!-- popup -->
+    <?php if (isset($_SESSION['user_id']) && empty($_SESSION['phone']) && (isset($_GET['page']) && ($_GET['page'] === 'home' || $_GET['page'] === 'profil-user'))): ?>
+    <div id="phone-popup" class="popup">
+        <div class="popup-content">
+            <p>Vous n'avez pas encore renseigné votre numéro de téléphone.</p>
+            <p>Il sera utile pour réserver une table !</p>
+            <button onclick="window.location.href='?page=update-user'">Compléter mon profil</button>
+            <button onclick="closePopup()">Plus tard</button>
+        </div>
+    </div>
+<?php endif; ?>
+
+
 
     <script src="./scripts/layout.js"></script>
 </body>

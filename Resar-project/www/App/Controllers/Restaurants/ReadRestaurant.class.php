@@ -9,8 +9,6 @@ class ReadRestaurant
 {
     public function execute(array $postData)
     {
-        // session_start(); // Démarrer la session si ce n'est pas déjà fait
-
         $pdo = DbConnect::getPDO();
 
         // Récupération des restaurants

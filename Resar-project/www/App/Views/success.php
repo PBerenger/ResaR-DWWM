@@ -1,10 +1,20 @@
-<?php ob_start(); ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+ob_start();
 
-<main>
+$successMessage = $_SESSION['success_message'] ?? null;
+unset($_SESSION['success_message']);
+?>
+
     <body>
         <div class="success-error-container">
-            <h1>Félicitations, votre inscription a réussi !</h1>
-            <p>Vous avez été inscrit avec succès.</p>
+            <h1>Félicitations !</h1>
+
+            <?php if ($successMessage): ?>
+                <p><?= htmlspecialchars($successMessage) ?></p>
+            <?php endif; ?>
 
             <p id="countdown">Redirection dans 3 secondes...</p>
 
@@ -15,7 +25,7 @@
                 let countdownInterval = setInterval(function() {
                     seconds--;
                     countdownElement.textContent = "Redirection dans " + seconds + " secondes...";
-                    
+
                     if (seconds <= 0) {
                         clearInterval(countdownInterval);
                         window.location.href = "?page=home";
@@ -24,7 +34,6 @@
             </script>
         </div>
     </body>
-</main>
 
 <?php
 $content = ob_get_clean();

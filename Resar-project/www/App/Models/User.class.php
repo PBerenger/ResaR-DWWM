@@ -2,26 +2,27 @@
 
 namespace App\Models;
 
-use PDO;
+use App\Config\DbConnect;
 
 class User
 {
+    private \PDO $pdo;
+
     private int $idUsers;
     private string $firstName;
     private string $lastName;
     private string $email;
     private string $phone;
     private string $password;
-    private string $inscriptionDate;
-    private array|string $role;
-    private string $lastConnection;
-    private PDO $pdo;
+    private string $photo;
+    private array $role = [];
+    private string $createdAt;
 
-    public function __construct(PDO $pdo)
+
+    public function __construct(?\PDO $pdo = null)
     {
-        $this->pdo = $pdo;
+        $this->pdo = $pdo ?? DbConnect::getPDO();
     }
-
 
     // GETTERS
 
@@ -41,175 +42,175 @@ class User
     {
         return $this->email;
     }
-    public function getPhonel(): string
+    public function getPhone(): string
     {
         return $this->phone;
+    }
+    public function getPhoto(): string
+    {
+        return $this->photo ?? 'u_default.jpg';
     }
     public function getPassword(): string
     {
         return $this->password;
     }
-    public function getInscriptionDate(): string
+    public function getRole(): array
     {
-        return $this->inscriptionDate;
+        if (is_array($this->role)) {
+            return $this->role;
+        }
+        return $this->role ? explode(',', $this->role) : ['Rôle inconnu'];
     }
-    public function getRole(): int
+    public function getCreatedAt(): string
     {
-        return $this->role;
-    }
-    public function getLastConnection(): string
-    {
-        return $this->lastConnection;
+        return $this->createdAt;
     }
 
     // SETTERS
 
-    public function setId(): int
+    public function setId(int $id): void
     {
-        return $this->idUsers;
+        $this->idUsers = $id;
     }
-    public function setfirstName(): string
+    public function setFirstName(string $firstName): void
     {
-        return $this->firstName;
+        $this->firstName = $firstName;
     }
-    public function setlastName(): string
+    public function setLastName(string $lastName): void
     {
-        return $this->lastName;
+        $this->lastName = $lastName;
     }
-    public function setEmail(): string
+    public function setEmail(string $email): void
     {
-        return $this->email;
+        $this->email = $email;
     }
-    public function setPhonel(): string
+    public function setPhone(string $phone): void
     {
-        return $this->phone;
+        $this->phone = $phone;
     }
-    public function setPassword(): string
+    public function setPhoto(string $photo): void
     {
-        return $this->password;
+        $this->photo = $photo;
     }
-    public function setInscriptionDate(): string
+    public function setPassword(string $password): void
     {
-        return $this->inscriptionDate;
+        if (!password_get_info($password)['algo']) {
+            $this->password = password_hash($password, PASSWORD_DEFAULT);
+        } else {
+            $this->password = $password;
+        }
     }
-    public function setRole(): int
+    public function setRole(array|string $role): void
     {
-        return $this->role;
+        $this->role = is_array($role) ? $role : explode(",", $role);
     }
-    public function setLastConnection(): string
+    public function setCreatedAt(string $createdAt): void
     {
-        return $this->lastConnection;
+        $this->createdAt = $createdAt;
     }
 
     //----------------------------------------------------------------
-
-
-    public function findUserById(?int $id): bool
+    // METHODES
+    public function findUserById(?int $id): ?User
     {
-        if (!$id) {
-            return false;
-        }
-
-        $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.role_name) AS roles 
-                                    FROM users u 
-                                    LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
-                                    LEFT JOIN roles r ON ur.role_id = r.id
-                                    WHERE u.idUsers = ?
-                                    ");
+        $stmt = $this->pdo->prepare("SELECT u.*, 
+                                GROUP_CONCAT(r.roleName) AS roles 
+                                FROM users u 
+                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
+                                LEFT JOIN roles r ON ur.role_id = r.idRole
+                                WHERE u.idUsers = ?
+                                GROUP BY u.idUsers");
         $stmt->execute([$id]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user) {
-            $this->idUsers = $user["idUsers"];
-            $this->firstName = $user["firstName"];
-            $this->lastName = $user["lastName"];
-            $this->email = $user["email"];
-            $this->phone = $user["phone"];
-            $this->password = $user["password"];
-            $this->inscriptionDate = $user["created_at"];
-            $this->lastConnection = $user["lastConnection"] ?? null;
-            $this->role = $user["roles"] ? explode(",", $user["roles"]) : [];
+            $user["roles"] = $user["roles"] ?? "";
+            return $this->commonUser($user);
         }
-
-        return $user !== false;
+        return null;
     }
 
     public function findUserByEmail(string $email): ?User
     {
-        $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.role_name) AS roles 
-                                    FROM users u 
-                                    LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
-                                    LEFT JOIN roles r ON ur.role_id = r.id
-                                    WHERE u.email = ?
-                                    ");
+        $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.roleName) AS roles 
+                                FROM users u 
+                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
+                                LEFT JOIN roles r ON ur.role_id = r.idRole
+                                WHERE u.email = ?
+                                GROUP BY u.idUsers");
         $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user) {
-            $this->idUsers = $user["idUsers"];
-            $this->firstName = $user["firstName"];
-            $this->lastName = $user["lastName"];
-            $this->email = $user["email"];
-            $this->phone = $user["phone"];
-            $this->password = $user["password"];
-            $this->inscriptionDate = $user["created_at"];
-            $this->lastConnection = $user["lastConnection"] ?? null;
-            $this->role = $user["roles"] ? explode(",", $user["roles"]) : [];
-            return $this;
+            $user["roles"] = $user["roles"] ?? "";
+            return $this->commonUser($user);
         }
+        return null;
+    }
 
-        return $user !== false;
+    private function commonUser(array $userData): User
+    {
+        $newUser = new User($this->pdo);
+        $newUser->idUsers = $userData["idUsers"];
+        $newUser->firstName = $userData["firstName"];
+        $newUser->lastName = $userData["lastName"];
+        $newUser->email = $userData["email"];
+        $newUser->phone = $userData["phone"] ?? "";
+        $newUser->password = $userData["password"];
+        $newUser->createdAt = $userData["created_at"] ?: "";
+        $newUser->setRole($userData["roles"] ?? "");
+
+        return $newUser;
     }
 
 
-    public function checkPass($passToCheck): bool
-    {
-        return !empty($this->password) && password_verify($passToCheck, $this->password);
-    }
 
-    public function setSession(): void
+    public function checkPass(string $passToCheck): bool
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        if (empty($this->password)) {
+            return false;
         }
-
-        $_SESSION["USER_ID"] = $this->idUsers;
-
-        // update the lastseen date in the database
-        $stmt = $this->pdo->prepare("UPDATE users SET lastConnection = NOW() WHERE idUsers = ?");
-        $stmt->execute([$this->idUsers]);
+        return password_verify($passToCheck, $this->password);
     }
 
     public function isAdmin(): bool
     {
-        return is_array($this->role) ? in_array("admin", $this->role) : $this->role === 1;
+        $roles = $this->getRole();
+        return in_array("admin", $roles) || in_array("1", $roles);
     }
 
     public function checkAdmin(): void
     {
         if (!$this->isAdmin()) {
-            header("HTTP/1.1 403 Forbidden");
-            echo "Accès refusé.";
-            exit;
+            throw new \Exception("403 Forbidden: Accès refusé.");
         }
     }
 
-    public static function checkAdminNew(PDO $pdo, ?int $id): ?User
+    public static function checkAdminNew(\PDO $pdo, ?int $id): ?User
     {
-        $user = new User($pdo);
-        $user->findUserById($id);
-
-        if (!$user->isAdmin()) {
-            header("Location: /");
-            exit;
+        $user = (new User($pdo))->findUserById($id);
+        if (!$user || !$user->isAdmin()) {
+            throw new \Exception("403 Forbidden: Accès refusé.");
         }
-
-
         return $user;
     }
 
-    public static function create(PDO $pdo, string $firstName, string $lastName, string $email, string $phone, string $password, int $roleId = 2): bool
-    {
+    public static function create(
+        \PDO $pdo,
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $phone,
+        string $password,
+        int $roleId = 2
+    ): ?User {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return null;
+        }
+
         $pdo->beginTransaction();
 
         try {
@@ -220,8 +221,7 @@ class User
                                 phone, 
                                 password, 
                                 created_at) 
-                                VALUES (
-                                :firstName, 
+                            VALUES (:firstName, 
                                 :lastName, 
                                 :email, 
                                 :phone, 
@@ -242,50 +242,86 @@ class User
 
             $userId = $pdo->lastInsertId();
 
-            $stmt = $pdo->prepare("INSERT INTO user_roles (
-                                user_id, 
-                                role_id) 
-                                VALUES (
-                                ?, 
-                                ?)");
-
+            $stmt = $pdo->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
             $stmt->execute([$userId, $roleId]);
 
             $pdo->commit();
-            return true;
+
+            return (new User($pdo))->findUserById($userId);
         } catch (\Exception $e) {
             $pdo->rollBack();
-            return false;
+            error_log('Erreur lors de la création de l\'utilisateur: ' . $e->getMessage());
+            return null;
         }
     }
 
-    public static function getAllUsers(PDO $pdo): array
+
+    public static function getAllUsers(\PDO $pdo): array
     {
-        $stmt = $pdo->prepare("SELECT u.*, GROUP_CONCAT(r.role_name) AS roles 
-                            FROM users u 
-                            LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
-                            LEFT JOIN roles r ON ur.role_id = r.id
-                            GROUP BY u.idUsers
-                            ");
+        $stmt = $pdo->prepare("SELECT 
+                                u.idUsers AS id,
+                                u.email,
+                                u.firstName,
+                                u.lastName,
+                                u.password,
+                                u.created_at AS createdAt,
+                                GROUP_CONCAT(r.roleName) AS roles
+                            FROM users u
+                            LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
+                            LEFT JOIN roles r ON ur.role_id = r.idRole
+                            GROUP BY u.idUsers");
         $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        $users = [];
+        return array_map([self::class, 'commonUser'], $results);
+    }
 
-        foreach ($results as $user) {
-            $newUser = new User($pdo);
-            $newUser->idUsers = $user["idUsers"];
-            $newUser->firstName = $user["firstName"];
-            $newUser->lastName = $user["lastName"];
-            $newUser->email = $user["email"];
-            $newUser->phone = $user["phone"];
-            $newUser->password = $user["password"];
-            $newUser->inscriptionDate = $user["created_at"];
-            $newUser->lastConnection = $user["lastConnection"] ?? null;
-            $newUser->role = $user["roles"] ? explode(",", $user["roles"]) : [];
-            $users[] = $newUser;
+    // ----------------------------------------------------------------
+    // GESTION DES PHOTOS
+
+    public function uploadPhoto(array $file): bool
+    {
+        // Vérification de la présence du fichier
+        if (!isset($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+            return false;
         }
 
-        return $users;
+        // Extensions et types MIME autorisés
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+        // Récupération des infos sur le fichier
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $fileInfo->file($file['tmp_name']);
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($mimeType, $allowedTypes) || !in_array($extension, $allowedExtensions)) {
+            return false;
+        }
+
+        // Nouveau nom de fichier unique
+        $newFileName = uniqid('user_' . $this->idUsers . '_') . '.' . $extension;
+
+        // Dossier de destination
+        $uploadDir = __DIR__ . '/../../public/uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $filePath = $uploadDir . $newFileName;
+
+        // Déplacement du fichier
+        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+            return false;
+        }
+
+        // Mise à jour du chemin en base de données
+        $stmt = $this->pdo->prepare("UPDATE users SET photo = ? WHERE idUsers = ?");
+        if ($stmt->execute([$newFileName, $this->idUsers])) {
+            $this->photo = $newFileName;
+            return true;
+        }
+
+        return false;
     }
 }

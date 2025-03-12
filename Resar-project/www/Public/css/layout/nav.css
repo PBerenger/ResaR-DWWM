@@ -25,6 +25,10 @@ header nav li {
   display: flex;
   align-items: center;
 }
+header nav .user-status {
+  margin-right: 20px;
+  font-size: 1.5rem;
+}
 header nav .search-bar-nav {
   display: flex;
   align-items: center;
@@ -39,11 +43,7 @@ header nav .search-bar-nav input {
   padding: 10px;
   font-size: 16px;
   width: 300px;
-  border-bottom: 2px solid var(--primary-background);
-}
-header nav .user-status {
-  margin-right: 20px;
-  font-size: 1.5rem;
+  border-bottom: 2px solid var(--secondary-color);
 }
 .register-menu {
   position: fixed;

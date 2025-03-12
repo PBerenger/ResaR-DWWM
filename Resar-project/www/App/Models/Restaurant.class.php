@@ -6,8 +6,8 @@ use App\Config\DbConnect;
 
 class Restaurant
 {
-
     private \PDO $pdo;
+
     private int $idRestaurants;
     private int $owner_id;
     private string $name;

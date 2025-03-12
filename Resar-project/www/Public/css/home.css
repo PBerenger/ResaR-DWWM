@@ -104,6 +104,7 @@
 .home-container .home-bot .home-reviews {
   display: flex;
   flex-wrap: wrap;
+  padding: 20px 6%;
   gap: 20px;
   justify-content: space-between;
 }
