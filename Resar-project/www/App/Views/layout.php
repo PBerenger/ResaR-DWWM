@@ -20,6 +20,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="/css/registerRestaurant.css">
 
     <link rel="stylesheet" href="/css/users/profilUser.css">
+    <link rel="stylesheet" href="/css/users/updateUser.css">
 
 </head>
 
@@ -130,20 +131,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <footer>
         <p>&copy; <?= date('Y') ?> ResaR. Tous droits réservés.</p>
     </footer>
-
-    <!-- popup -->
-    <?php if (isset($_SESSION['user_id']) && empty($_SESSION['phone']) && (isset($_GET['page']) && ($_GET['page'] === 'home' || $_GET['page'] === 'profil-user'))): ?>
-    <div id="phone-popup" class="popup">
-        <div class="popup-content">
-            <p>Vous n'avez pas encore renseigné votre numéro de téléphone.</p>
-            <p>Il sera utile pour réserver une table !</p>
-            <button onclick="window.location.href='?page=update-user'">Compléter mon profil</button>
-            <button onclick="closePopup()">Plus tard</button>
-        </div>
-    </div>
-<?php endif; ?>
-
-
 
     <script src="./scripts/layout.js"></script>
 </body>

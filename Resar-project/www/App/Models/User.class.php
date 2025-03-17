@@ -48,7 +48,7 @@ class User
     }
     public function getPhoto(): string
     {
-        return $this->photo ?? 'u_default.jpg';
+        return !empty($this->photo) ? $this->photo : 'u_default.jpg';
     }
     public function getPassword(): string
     {
@@ -113,18 +113,22 @@ class User
     // METHODES
     public function findUserById(?int $id): ?User
     {
-        $stmt = $this->pdo->prepare("SELECT u.*, 
-                                GROUP_CONCAT(r.roleName) AS roles 
-                                FROM users u 
-                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
-                                LEFT JOIN roles r ON ur.role_id = r.idRole
-                                WHERE u.idUsers = ?
-                                GROUP BY u.idUsers");
+        $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.roleName) AS roles, 
+                                        CONCAT('Public/assets/uploads/users/', p.photo_path) AS photo
+                                        FROM users u
+                                        LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
+                                        LEFT JOIN roles r ON ur.role_id = r.idRole
+                                        LEFT JOIN user_photos up ON u.idUsers = up.user_id
+                                        LEFT JOIN photos p ON up.photo_id = p.idPhoto
+                                        WHERE u.idUsers = ?
+                                        GROUP BY u.idUsers");
+
         $stmt->execute([$id]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user) {
             $user["roles"] = $user["roles"] ?? "";
+            $user["photo"] = $user["photo_path"] ?? "u_default.jpg";
             return $this->commonUser($user);
         }
         return null;
@@ -157,6 +161,7 @@ class User
         $newUser->email = $userData["email"];
         $newUser->phone = $userData["phone"] ?? "";
         $newUser->password = $userData["password"];
+        $newUser->photo = $userData["photo"] ?? 'u_default.jpg';
         $newUser->createdAt = $userData["created_at"] ?: "";
         $newUser->setRole($userData["roles"] ?? "");
 
@@ -279,49 +284,51 @@ class User
     // ----------------------------------------------------------------
     // GESTION DES PHOTOS
 
-    public function uploadPhoto(array $file): bool
+    public function uploadPhotoUser($userId, $file)
     {
-        // Vérification de la présence du fichier
-        if (!isset($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
-            return false;
+        // Vérification des erreurs
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return ['error' => 'Erreur lors du téléchargement.'];
         }
 
-        // Extensions et types MIME autorisés
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-
-        // Récupération des infos sur le fichier
-        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $fileInfo->file($file['tmp_name']);
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-
-        if (!in_array($mimeType, $allowedTypes) || !in_array($extension, $allowedExtensions)) {
-            return false;
+        // Validation du type MIME
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return ['error' => 'Type de fichier non autorisé.'];
         }
 
-        // Nouveau nom de fichier unique
-        $newFileName = uniqid('user_' . $this->idUsers . '_') . '.' . $extension;
-
-        // Dossier de destination
-        $uploadDir = __DIR__ . '/../../public/uploads/';
+        // Définir le dossier d'upload
+        $uploadDir = __DIR__ . '/../../Public/assets/uploads/users/';
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+            mkdir($uploadDir, 0755, true);
         }
 
-        $filePath = $uploadDir . $newFileName;
+        $filename = uniqid() . '-' . basename($file['name']);
+        $uploadPath = $uploadDir . $filename;
 
         // Déplacement du fichier
-        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-            return false;
+        if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
+            return ['error' => 'Échec du déplacement du fichier.'];
         }
 
-        // Mise à jour du chemin en base de données
-        $stmt = $this->pdo->prepare("UPDATE users SET photo = ? WHERE idUsers = ?");
-        if ($stmt->execute([$newFileName, $this->idUsers])) {
-            $this->photo = $newFileName;
-            return true;
+        // Insertion dans la table photos
+        $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
+        $stmt->bindValue(':photo_path', 'Public/assets/uploads/users/' . $filename, \PDO::PARAM_STR);
+        if (!$stmt->execute()) {
+            return ['error' => 'Erreur lors de l\'enregistrement en base.'];
         }
 
-        return false;
+        $photoId = $this->pdo->lastInsertId();
+
+        // Liaison avec l'utilisateur
+        $stmt = $this->pdo->prepare("INSERT INTO user_photos (user_id, photo_id) VALUES (:user_id, :photo_id)");
+        $stmt->bindValue(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            return ['success' => 'Photo mise à jour avec succès.'];
+        } else {
+            return ['error' => 'Erreur lors de la liaison utilisateur-photo.'];
+        }
     }
 }

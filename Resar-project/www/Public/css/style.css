@@ -1,5 +1,4 @@
 @import '../css/layout/nav.css';
-@import '../css/layout/nav.css';
 @import '../css/layout/main.css';
 @import '../css/layout/footer.css';
 @import '../css/layout/darkMode.css';
@@ -91,37 +90,7 @@ body .separation {
   margin: 20px 0;
   background-color: var(--secondary-color);
 }
-.popup {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.popup-content {
-  background: white;
-  padding: 20px;
-  width: 80%;
-  max-width: 400px;
-  text-align: center;
-  border-radius: 8px;
-  border: 3px solid var(--secondary-color);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-.popup button {
-  margin: 10px;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 5px;
-}
-.popup button:hover {
-  background-color: var(--secondary-color);
-}
+
 /* Responsive Général */
 @media (max-width: 768px) {
   body {

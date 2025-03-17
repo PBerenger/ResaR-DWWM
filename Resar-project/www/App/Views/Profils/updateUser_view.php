@@ -38,12 +38,25 @@ ob_start();
                 </div>
 
                 <div class="card-action">
-                    <button type="submit" class="btn-modifier">Enregistrer les modifications</button>
+                    <button type="button" class="btn-modifier" onclick="showPopup()">Enregistrer les modifications</button>
+                    <a href="?page=profil-user" class="btn-retour">Annuler</a>
                 </div>
+
+                <!-- Popup -->
+                <div id="confirmationPopup" class="popup-overlay">
+                    <div class="popup">
+                        <p>Voulez-vous modifier vos informations ?</p>
+                        <button onclick="submitForm()" class="btn-confirm">Confirmer</button>
+                        <button onclick="hidePopup()" class="btn-cancel">Annuler</button>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>
 </div>
+
+<script src="./scripts/updateUser.js"></script>
 
 <?php
 $content = ob_get_clean();

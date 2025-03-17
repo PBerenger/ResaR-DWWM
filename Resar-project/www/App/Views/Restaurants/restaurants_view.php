@@ -15,10 +15,10 @@ ob_start();
                 <h3><?= htmlspecialchars($restaurant->getName()); ?></h3>
 
                 <?php
-                if (!empty($userProfilePhoto) && file_exists('assets/img/' . $userProfilePhoto)) {
-                    $photoPath = 'assets/img/' . htmlspecialchars($userProfilePhoto);
+                if (!empty($userProfilePhoto) && file_exists('assets/uploads/users/' . $userProfilePhoto)) {
+                    $photoPath = 'assets/uploads/users/' . htmlspecialchars($userProfilePhoto);
                 } else {
-                    $photoPath = 'assets/img/u_default.jpg';
+                    $photoPath = 'assets/uploads/users/u_default.jpg';
                 }
                 ?>
                 <img src="<?= htmlspecialchars($photoPath) ?>"

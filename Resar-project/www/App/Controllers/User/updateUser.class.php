@@ -40,6 +40,8 @@ class UpdateUser
                         // Mise à jour des informations
                         $stmt = $pdo->prepare("UPDATE users SET firstName = ?, lastName = ?, phone = ? WHERE idUsers = ?");
                         $stmt->execute([$firstName, $lastName, $phone, $_SESSION['user_id']]);
+                        $_SESSION['phone'] = $phone;
+
 
                         $_SESSION['success_message'] = "Mise à jour réussie !";
                         header("Location: ?page=profil-user");

@@ -8,7 +8,8 @@
   justify-content: space-between;
   width: 100%;
 }
-.profile-container .card-profil .btn-modifier {
+.profile-container .card-profil .btn-modifier,
+.profile-container .card-profil .btn-retour {
   text-align: center;
   background-color: var(--secondary-color);
   color: var(--third-color);
@@ -16,8 +17,15 @@
   margin-top: 10px;
   text-decoration: none;
   border-radius: 5px;
+  border: none;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1.5;
+  height: 40px;
+  cursor: pointer;
 }
-.profile-container .card-profil .btn-modifier:hover {
+.profile-container .card-profil .btn-modifier:hover,
+.profile-container .card-profil .btn-retour:hover {
   background-color: var(--primary-color);
   color: var(--third-color);
 }
@@ -56,6 +64,34 @@
   height: auto;
   border-radius: 10px;
 }
+.profile-container .card-profil .popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.profile-container .card-profil .popup {
+  border: 3px solid var(--primary-color);
+  background-color: var(--third-color);
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+.profile-container .card-profil .btn-confirm {
+  background-color: var(--secondary-color);
+  color: var(--third-color);
+  padding: 10px 20px;
+  margin-right: 10px;
+}
+.profile-container .card-profil .btn-cancel {
+  background-color: gray;
+  color: white;
+  padding: 10px 20px;
+}
 .card-info {
   margin-bottom: 10px;
 }
@@ -76,6 +112,37 @@
 }
 .card-button:hover {
   background: var(--button-hover-background);
+}
+.popup {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 8px;
+  border: 3px solid var(--secondary-color);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+.popup button {
+  margin: 10px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+}
+.popup button:hover {
+  background-color: var(--secondary-color);
 }
 @media (max-width: 768px) {
   #card-profil {

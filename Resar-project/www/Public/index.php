@@ -18,7 +18,7 @@ require_once "../Config/DbConnect.php";
 
 use App\Controllers\{LoginUser, Restaurants, Home, Search};
 use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
-use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser};
+use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser, UpdatePhoto};
 use App\Config\DbConnect;
 use App\Models\User;
 
@@ -70,10 +70,14 @@ try {
             break;
 
         case 'update-user':
-            $controller = new App\Controllers\User\UpdateUser();
+            $controller = new UpdateUser();
             $controller->execute($_POST);
             break;
 
+        case 'update-photo':
+            $controller = new UpdatePhoto();
+            $controller->execute($_POST, $_FILES);
+            break;
 
 
 

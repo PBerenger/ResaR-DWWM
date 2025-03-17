@@ -9,9 +9,9 @@ ob_start();
 
 <div class="restaurants-details-container">
     <?php
-    $photoPath = !empty($restaurant->getPhoto()) && file_exists('assets/img/' . $restaurant->getPhoto())
-        ? 'assets/img/' . htmlspecialchars($restaurant->getPhoto())
-        : 'assets/img/r_default.jpg';
+    $photoPath = !empty($restaurant->getPhoto()) && file_exists('assets/uploads/restaurants/' . $restaurant->getPhoto())
+        ? 'assets/uploads/restaurants/' . htmlspecialchars($restaurant->getPhoto())
+        : 'assets/uploads/restaurants/r_default.jpg';
     ?>
     <img src="<?= htmlspecialchars($photoPath) ?>"
         alt="Photo du restaurant"
@@ -19,12 +19,12 @@ ob_start();
 
     <div class="restaurant-details-bottom">
         <?php
-        $photoPath = !empty($restaurant->getPhoto()) && file_exists('assets/img/' . $restaurant->getPhoto())
-            ? 'assets/img/' . htmlspecialchars($restaurant->getPhoto())
-            : 'assets/img/u_default.jpg';
+        $photoPath = !empty($restaurant->getPhoto()) && file_exists('assets/uploads/users/' . $restaurant->getPhoto())
+            ? 'assets/uploads/users/' . htmlspecialchars($restaurant->getPhoto())
+            : 'assets/uploads/users/u_default.jpg';
         ?>
         <div class="restaurant-profile-card">
-            <img src="assets/img/u_default.jpg" alt="Photo de profil" class="restaurant-profile-photo">
+            <img src="assets/uploads/users/u_default.jpg" alt="Photo de profil" class="restaurant-profile-photo">
         </div>
 
         <div class="restaurant-infos">
@@ -47,7 +47,7 @@ ob_start();
         <div class="dishes-grid">
             <?php foreach ($dishes as $item): ?>
                 <div class="dish-card">
-                    <img src="assets/img/d_default.jpg" alt="Photo du plat" class="dish-photo">
+                    <img src="assets/uploads/dishes/d_default.jpg" alt="Photo du plat" class="dish-photo">
                     <div class="dish-info">
                         <h3><?= htmlspecialchars($item['name']) ?></h3>
                         <p><?= htmlspecialchars($item['description']) ?></p>

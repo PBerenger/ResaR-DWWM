@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 ob_start();
 ?>
 
@@ -21,9 +22,9 @@ ob_start();
                             <h3><?= htmlspecialchars($restaurant->getName()); ?></h3>
 
                             <?php
-                            $photoPath = 'assets/img/r_default.jpg';
-                            if (!empty($restaurant->getPhoto()) && file_exists('assets/img/' . $restaurant->getPhoto())) {
-                                $photoPath = 'assets/img/' . htmlspecialchars($restaurant->getPhoto());
+                            $photoPath = 'assets/uploads/restaurants/r_default.jpg';
+                            if (!empty($restaurant->getPhoto()) && file_exists('assets/uploads/restaurants/' . $restaurant->getPhoto())) {
+                                $photoPath = 'assets/uploads/restaurants/' . htmlspecialchars($restaurant->getPhoto());
                             }
                             ?>
                             <img src="<?= $photoPath ?>" alt="Photo du restaurant" class="restaurant-photo">
@@ -69,9 +70,9 @@ ob_start();
                         <div class="review-header">
 
                             <?php
-                            $photoPath = 'assets/img/u_default.jpg';
-                            if (!empty($review->userPhoto) && file_exists('assets/img/' . $review->userPhoto)) {
-                                $photoPath = 'assets/img/' . htmlspecialchars($review->userPhoto);
+                            $photoPath = 'assets/uploads/users/u_default.jpg';
+                            if (!empty($review->userPhoto) && file_exists('assets/uploads/users/' . $review->userPhoto)) {
+                                $photoPath = 'assets/uploads/users/' . htmlspecialchars($review->userPhoto);
                             }
                             ?>
                             <img src="<?= $photoPath ?>" alt="Photo du profil" class="review-user-photo">
@@ -91,10 +92,10 @@ ob_start();
                             <a href="index.php?page=restaurant&id=<?= htmlspecialchars($review->restaurantId) ?>">
 
                                 <?php
-                                if (!empty($restaurantPhoto) && file_exists('assets/img/' . $restaurantPhoto)) {
-                                    $photoPath = 'assets/img/' . htmlspecialchars($restaurantPhoto);
+                                if (!empty($restaurantPhoto) && file_exists('assets/uploads/restaurants/' . $restaurantPhoto)) {
+                                    $photoPath = 'assets/uploads/restaurants/' . htmlspecialchars($restaurantPhoto);
                                 } else {
-                                    $photoPath = 'assets/img/r_default.jpg';
+                                    $photoPath = 'assets/uploads/restaurants/r_default.jpg';
                                 }
                                 ?>
                                 <img src="<?= htmlspecialchars($photoPath) ?>"
@@ -111,7 +112,6 @@ ob_start();
             <?php endif; ?>
         </div>
     </div>
-
 </div>
 
 <script src="./scripts/home.js"></script>

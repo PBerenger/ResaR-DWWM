@@ -55,14 +55,14 @@ ob_start();
         <!-- Carte de la photo de profil -->
         <div class="card-profile-photo">
             <?php
-            if (!empty($userProfilePhoto) && file_exists('assets/img/' . $userProfilePhoto)) {
-                $photoPath = 'assets/img/' . htmlspecialchars($userProfilePhoto);
-            } else {
-                $photoPath = 'assets/img/u_default.jpg';
-            }
+            $photoFile = 'assets/uploads/users/' . $user->getPhoto();
+            $photoPath = (file_exists($photoFile) && !empty($user->getPhoto()))
+                ? $photoFile
+                : 'assets/uploads/users/u_default.jpg';
+                var_dump($photoFile);
             ?>
-            <img src="<?= htmlspecialchars($photoPath) ?>" alt="Photo de profil" class="user-photo">
-            <a href="?page=update_photo" class="btn-modifier">Modifier</a>
+            <img src="<?= htmlspecialchars($photoFile) ?>" alt="Photo de profil" class="user-photo">
+            <a href="?page=update-photo" class="btn-modifier">Modifier</a>
         </div>
     </div>
 </div>
@@ -75,7 +75,19 @@ ob_start();
     <a class="btn-more-resa">Réserver</a>
 </div>
 
-<script src="../../../Public/scripts/updateUser.js"></script>
+<!-- popup -->
+<?php if (isset($_SESSION['user_id']) && empty($_SESSION['phone'])): ?>
+    <div id="phone-popup" class="popup">
+        <div class="popup-content">
+            <p>Vous n'avez pas encore renseigné votre numéro de téléphone.</p>
+            <p>Il sera utile pour réserver une table !</p>
+            <button onclick="window.location.href='?page=update-user'">Renseigner</button>
+            <button onclick="closePopup()">Plus tard</button>
+        </div>
+    </div>
+<?php endif; ?>
+
+<script src="./scripts/profilUser.js"></script>
 
 <?php
 $content = ob_get_clean();

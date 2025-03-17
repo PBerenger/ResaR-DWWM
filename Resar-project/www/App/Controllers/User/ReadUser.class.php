@@ -18,14 +18,22 @@ class ReadUser
             header("Location: ?page=login-user");
             exit;
         }
-
+        
         // Connexion à la base de données
         $pdo = DbConnect::getPDO();
         $userId = $_SESSION['user_id'];
-
+        
         // Récupérer les informations de l'utilisateur
         $userModel = new User($pdo);
         $user = $userModel->findUserById($userId);
+        if ($user) {
+            $_SESSION['phone'] = $user->getPhone();
+            $_SESSION['photo'] = $user->getPhoto(); //?
+        } else {
+            $_SESSION['error_message'] = "Numéro de téléphone introuvable.";
+            header("Location: ?page=error");
+            exit;
+        }
 
         // Si l'utilisateur n'existe pas, afficher une erreur
         if (!$user) {
@@ -37,4 +45,3 @@ class ReadUser
         require __DIR__ . '/../../Views/Profils/profilUser_view.php';
     }
 }
-
