@@ -5,6 +5,21 @@ if (session_status() === PHP_SESSION_NONE) {
 
 ob_start();
 ?>
+
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success">
+        <?= htmlspecialchars($_SESSION['success_message']) ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-error">
+        <?= htmlspecialchars($_SESSION['error_message']) ?>
+    </div>
+    <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
+
 <h2>Vos information administrateur :</h2>
 
 <div class="card-profil">
@@ -47,32 +62,12 @@ ob_start();
             </div>
 
         </div>
-        <a href="?page=update-user" class="btn-modifier">Modifier vos informations</a>
+        <a href="?page=update-by-admin" class="btn-modifier">Modifier vos informations</a>
     </div>
 </div>
 
 
 <h2>Liste des utilisateurs</h2>
-
-<form method="GET" action="?page=admin-home" class="filter-form">
-    <label for="filter">Filtrer par :</label>
-    <select name="filter" id="filter">
-        <option value="id_asc" <?= ($_GET['filter'] ?? '') === 'id_asc' ? 'selected' : '' ?>>ID (Ascendant)</option>
-        <option value="id_desc" <?= ($_GET['filter'] ?? '') === 'id_desc' ? 'selected' : '' ?>>ID (Descendant)</option>
-        <option value="admin" <?= ($_GET['filter'] ?? '') === 'admin' ? 'selected' : '' ?>>Rôle Admin</option>
-        <option value="date_asc" <?= ($_GET['filter'] ?? '') === 'date_asc' ? 'selected' : '' ?>>Date (Ancien à Récent)</option>
-        <option value="date_desc" <?= ($_GET['filter'] ?? '') === 'date_desc' ? 'selected' : '' ?>>Date (Récent à Ancien)</option>
-        <option value="reservations_desc" <?= ($_GET['filter'] ?? '') === 'reservations_desc' ? 'selected' : '' ?>>Réservations (Descendant)</option>
-        <option value="reservations_asc" <?= ($_GET['filter'] ?? '') === 'reservations_asc' ? 'selected' : '' ?>>Réservations (Ascendant)</option>
-        <option value="restaurants_desc" <?= ($_GET['filter'] ?? '') === 'restaurants_desc' ? 'selected' : '' ?>>Restaurants (Descendant)</option>
-        <option value="restaurants_asc" <?= ($_GET['filter'] ?? '') === 'restaurants_asc' ? 'selected' : '' ?>>Restaurants (Ascendant)</option>
-    </select>
-
-    <label for="search">Rechercher :</label>
-    <input type="text" name="search" id="search" placeholder="Nom, Prénom, Email" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-
-    <button type="submit" class="btn-filter">Appliquer</button>
-</form>
 
 <?php if (!empty($usersList)): ?>
     <table class="user-table">
@@ -87,20 +82,27 @@ ob_start();
                 <th>Date de création</th>
                 <th>Réservations</th>
                 <th>Restaurants possédés</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($usersList as $user): ?>
-                <tr title='modifier' data-id="<?= htmlspecialchars($user['idUsers']) ?>" class="clickable-row">
-                    <td><?= htmlspecialchars($user['idUsers'] ?? 'INCONNU') ?></td>
-                    <td><?= htmlspecialchars($user['firstName'] ?? 'INCONNU') ?></td>
-                    <td><?= htmlspecialchars($user['lastName'] ?? 'INCONNU') ?></td>
-                    <td><?= htmlspecialchars($user['email'] ?? 'INCONNU') ?></td>
-                    <td><?= htmlspecialchars($user['phone'] ?? 'Non renseigné') ?></td>
-                    <td><?= htmlspecialchars($user['roles'] ?? 'INCONNU', ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= (new DateTime($user['created_at'] ?? 'ERREUR'))->format('d/m/Y H:i') ?></td>
-                    <td><?= htmlspecialchars($user['totalReservations'] ?? 'ERREUR') ?></td>
-                    <td><?= htmlspecialchars($user['totalOwnedRestaurants'] ?? 'ERREUR') ?></td>
+            <?php foreach ($usersList as $u): ?>
+                <tr title='modifier' data-id="<?= htmlspecialchars($u['idUsers']) ?>" class="clickable-row">
+                    <td><?= htmlspecialchars($u['idUsers'] ?? 'INCONNU') ?></td>
+                    <td><?= htmlspecialchars($u['firstName'] ?? 'INCONNU') ?></td>
+                    <td><?= htmlspecialchars($u['lastName'] ?? 'INCONNU') ?></td>
+                    <td><?= htmlspecialchars($u['email'] ?? 'INCONNU') ?></td>
+                    <td><?= htmlspecialchars($u['phone'] ?? 'Non renseigné') ?></td>
+                    <td><?= htmlspecialchars($u['roles'] ?? 'INCONNU', ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= (new DateTime($u['created_at'] ?? 'ERREUR'))->format('d/m/Y H:i') ?></td>
+                    <td><?= htmlspecialchars($u['totalReservations'] ?? 'ERREUR') ?> résas</td>
+                    <td><?= htmlspecialchars($u['totalOwnedRestaurants'] ?? 'ERREUR') ?> poss</td>
+                    <td>
+                        <form method="POST" action="?page=delete-user" onsubmit="return confirmDeletion('<?= htmlspecialchars($u['firstName']) ?>', '<?= htmlspecialchars($u['lastName']) ?>')">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($u['idUsers']) ?>">
+                            <button type="submit" class="btn-supp">🗑️</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

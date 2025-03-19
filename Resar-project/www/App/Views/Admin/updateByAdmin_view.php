@@ -35,6 +35,15 @@ ob_start();
                         <label for="phone">Téléphone :</label>
                         <input type="text" name="phone" id="phone" value="<?= htmlspecialchars($user->getPhone()) ?>" required>
                     </div>
+
+                    <div class="card-info">
+                        <label for="roles">Rôle :</label>
+                        <select name="roles" id="roles" required>
+                            <option value="user" <?= $user->getRole() === 'user' ? 'selected' : '' ?>>Utilisateur</option>
+                            <option value="admin" <?= $user->getRole() === 'admin' ? 'selected' : '' ?>>Administrateur</option>
+                            <option value="owner" <?= $user->getRole() === 'owner' ? 'selected' : '' ?>>Propriétaire</option>
+                        </select>
+                    </div>
                 </div>
 
 

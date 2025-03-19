@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controllers\User;
+namespace App\Controllers\Admin;
 
 use App\Config\DbConnect;
 use App\Models\User;
 use Exception;
 
-class UpdateUser
+class UpdateByAdmin
 {
     public function execute(array $postdata)
     {
@@ -17,11 +17,9 @@ class UpdateUser
         $errorMessage = '';
         $pdo = DbConnect::getPDO();
 
-        // Vérifie si un ID est passé dans l'URL pour la modification d'un utilisateur spécifique
+        // Vérifie si un ID est passé dans l'URL pour modifier un utilisateur spécifique
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $userId = $_GET['id'];
-        } elseif (isset($_SESSION['user_id'])) {
-            $userId = $_SESSION['user_id'];
         } else {
             $_SESSION['error_message'] = "Aucun utilisateur spécifié.";
             header("Location: ?page=error");
@@ -42,38 +40,33 @@ class UpdateUser
                 // Nettoyage des entrées
                 $firstName = htmlspecialchars(trim($postdata['firstName']));
                 $lastName = htmlspecialchars(trim($postdata['lastName']));
+                $email = htmlspecialchars(trim($postdata['email']));
                 $phone = htmlspecialchars(trim($postdata['phone']));
+                $roles = htmlspecialchars(trim($postdata['roles']));
 
                 // Validation des champs
-                if (empty($firstName) || empty($lastName) || empty($phone)) {
+                if (empty($firstName) || empty($lastName) || empty($phone) || empty($email) || empty($roles)) {
                     $errorMessage = "Tous les champs doivent être remplis.";
                 } elseif (strlen($firstName) > 50 || strlen($lastName) > 50) {
                     $errorMessage = "Le prénom et le nom ne doivent pas dépasser 50 caractères.";
+                } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errorMessage = "L'email n'est pas valide.";
                 } elseif (!preg_match('/^\+?[0-9 ]{8,15}$/', $phone)) {
                     $errorMessage = "Le numéro de téléphone n'est pas valide.";
+                } else {
+                    $allowedRoles = ['user', 'owner', 'admin'];
+                    if (!in_array($roles, $allowedRoles)) {
+                        $errorMessage = "Rôle invalide sélectionné.";
+                    }
                 }
 
                 if (empty($errorMessage)) {
-                    // Mise à jour des informations
-                    if ($_SESSION['role'] === 'admin' && isset($role)) {
-                        $stmt = $pdo->prepare("UPDATE users SET firstName = ?, lastName = ?, phone = ?, roles = ? WHERE idUsers = ?");
-                        $stmt->execute([$firstName, $lastName, $phone, $role, $userId]);
-                    } else {
-                        $stmt = $pdo->prepare("UPDATE users SET firstName = ?, lastName = ?, phone = ? WHERE idUsers = ?");
-                        $stmt->execute([$firstName, $lastName, $phone, $userId]);
-                    }
+                    // Mise à jour des informations utilisateur
+                    $stmt = $pdo->prepare("UPDATE users SET firstName = ?, lastName = ?, email = ?, phone = ?, roles = ? WHERE idUsers = ?");
+                    $stmt->execute([$firstName, $lastName, $email, $phone, $roles, $userId]);
 
-                    $_SESSION['success_message'] = "Mise à jour réussie !";
-
-                    // Redirection selon le rôle
-                    if ($_SESSION['role'] === 'admin') {
-                        header("Location: ?page=admin-home");
-                    } elseif ($_SESSION['role'] === 'owner') {
-                        header("Location: ?page=owner-home");
-                    } else {
-                        header("Location: ?page=profil-user");
-                    }
-                    
+                    $_SESSION['success_message'] = "L'utilisateur a été mis à jour avec succès !";
+                    header("Location: ?page=admin-home");
                     exit;
                 }
             } catch (Exception $e) {
@@ -88,6 +81,6 @@ class UpdateUser
             exit;
         }
 
-        require '../App/Views/Profils/updateUser_view.php';
+        require '../App/Views/Admin/updateByAdmin_view.php';
     }
 }

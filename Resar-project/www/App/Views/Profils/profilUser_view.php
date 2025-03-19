@@ -5,6 +5,20 @@ if (session_status() === PHP_SESSION_NONE) {
 ob_start();
 ?>
 
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success">
+        <?= htmlspecialchars($_SESSION['success_message']) ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-error">
+        <?= htmlspecialchars($_SESSION['error_message']) ?>
+    </div>
+    <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
+
 <div class="profile-container">
 
     <h1>Mon profil</h1>
@@ -50,6 +64,12 @@ ob_start();
 
             </div>
             <a href="?page=update-user" class="btn-modifier">Modifier vos informations</a>
+            <div class="card-action">
+                <form method="POST" action="?page=delete-user" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')">
+                    <input type="hidden" name="user_id" value="<?= htmlspecialchars($user->getId()) ?>">
+                    <button type="submit" class="btn-supprimer">❌ Supprimer le compte ❌</button>
+                </form>
+            </div>
         </div>
 
         <!-- Carte de la photo de profil -->

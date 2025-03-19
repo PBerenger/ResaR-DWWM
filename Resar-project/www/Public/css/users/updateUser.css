@@ -1,3 +1,7 @@
+.card-profil .card-profilAndSecurity .card-profilAndSecurity,
+.card-profil .card-profilAndSecurity .card-security-info {
+  margin: 10px 0;
+}
 .card-profil .card-profilAndSecurity .card-info {
   display: flex;
   align-items: center;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controllers\User;
+namespace App\Controllers\Admin;
 
 use App\Models\User;
 use App\Config\DbConnect;
 
-class DeleteUser
+class DeleteByAdmin
 {
     public function execute()
     {
@@ -27,17 +27,11 @@ class DeleteUser
             if ($userModel->deleteUserById($userId)) {
                 $_SESSION['success_message'] = "Utilisateur supprimé avec succès.";
 
-                if ($_SESSION['user_id'] == $userId) {
-                    session_destroy();
-                    header("Location: ?page=home");
-                    exit;
-                }
             } else {
                 $_SESSION['error_message'] = "Erreur lors de la suppression de l'utilisateur.";
-                header("Location: ?page=admin-home");
-                exit;
             }
         }
+        
         header("Location: ?page=admin-home");
         exit;
     }

@@ -14,6 +14,7 @@ function hidePopup() {
 function submitForm() {
     const form = document.querySelector("form");
     form.submit();
+    window.location.href = "?page=profil-user";
 }
 
 // Fermer le popup si l'utilisateur clique en dehors de la popup

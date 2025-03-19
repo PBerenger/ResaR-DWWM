@@ -23,11 +23,11 @@ require_once "../Config/DbConnect.php";
 use App\Config\DbConnect;
 
 use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
-use App\Controllers\Admin\{ReadAdmin};
+use App\Controllers\Admin\{ReadAdmin, UpdateByAdmin, DeleteByAdmin};
 // use App\Controllers\Owner\{ReadOwner};
 use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
 use App\Controllers\Restaurants\{ReadRestaurant, Details};
-use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser, UpdatePhoto};
+use App\Controllers\User\{ReadUser, UpdateUser, UpdatePhoto, DeleteUser};
 use App\Models\User;
 
 $pdo = DbConnect::getPDO();
@@ -82,19 +82,36 @@ try {
             $controller->execute($_POST);
             break;
 
+        case 'update-photo':
+            $controller = new UpdatePhoto();
+            $controller->execute($_POST, $_FILES);
+            break;
+
+        case "delete-user":
+            $controller = new DeleteUser();
+            $controller->execute();
+            break;
+
         case 'admin-home':
             (new ReadAdmin())->execute();
             break;
+
+        case 'update-by-admin':
+            $controller = new UpdateByAdmin();
+            $controller->execute($_POST);
+            break;
+
+        case "delete-by-admin":
+            $controller = new DeleteByAdmin();
+            $controller->execute();
+            break;
+
 
         // case 'owner-home':
         //     (new ReadOwner())->execute();
         //     break;
 
-            
-        case 'update-photo':
-            $controller = new UpdatePhoto();
-            $controller->execute($_POST, $_FILES);
-            break;
+
 
 
 
@@ -131,4 +148,3 @@ try {
     echo "<p>{$errorMessage}</p>";
     require "../App/Views/error.php";
 }
-

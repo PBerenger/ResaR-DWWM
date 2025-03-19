@@ -170,9 +170,17 @@ class User
         return null;
     }
 
+    public function deleteUserById(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE idUsers = ?");
 
+        if (!$stmt->execute([$id])) {
+            error_log("Erreur SQL : " . implode(" - ", $stmt->errorInfo()));
+            return false;
+        }
 
-
+        return true;
+    }
 
     public function checkPass(string $passToCheck): bool
     {
@@ -264,33 +272,32 @@ class User
         }
     }
 
-    public function getAllUsers(): array
+    public function getAllUsers(string $order = 'ASC'): array
     {
+        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+
         $stmt = $this->pdo->prepare("SELECT 
-                                        u.idUsers, 
-                                        u.firstName, 
-                                        u.lastName, 
-                                        u.email, 
-                                        u.phone, 
-                                        u.created_at,
-               GROUP_CONCAT(DISTINCT r.roleName) AS roles,
-               COUNT(DISTINCT res.idReservations) AS totalReservations,
-               COUNT(DISTINCT rest.idRestaurants) AS totalOwnedRestaurants
-                    FROM users u
-                    LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
-                    LEFT JOIN roles r ON ur.role_id = r.idRole
-                    LEFT JOIN reservations res ON u.idUsers = res.user_id
-                    LEFT JOIN restaurants rest ON u.idUsers = rest.owner_id
-                    GROUP BY u.idUsers
-                    ORDER BY u.created_at DESC
-    ");
+                                    u.idUsers, 
+                                    u.firstName, 
+                                    u.lastName, 
+                                    u.email, 
+                                    u.phone, 
+                                    u.created_at,
+                                    GROUP_CONCAT(DISTINCT r.roleName) AS roles,
+                                    COUNT(DISTINCT res.idReservations) AS totalReservations,
+                                    COUNT(DISTINCT rest.idRestaurants) AS totalOwnedRestaurants
+                                FROM users u
+                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
+                                LEFT JOIN roles r ON ur.role_id = r.idRole
+                                LEFT JOIN reservations res ON u.idUsers = res.user_id
+                                LEFT JOIN restaurants rest ON u.idUsers = rest.owner_id
+                                GROUP BY u.idUsers
+                                ORDER BY u.idUsers $order");
 
-        $stmt = $this->pdo->prepare("SELECT * FROM users ORDER BY idUsers ASC");
         $stmt->execute();
-        $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        return $users ?: [];
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
+
 
 
 
