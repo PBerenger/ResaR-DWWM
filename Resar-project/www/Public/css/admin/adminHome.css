@@ -1,0 +1,103 @@
+.card-profil {
+  background-color: var(--secondary-background);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card-profil .card-profilAndSecurity {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .card-profil .card-profilAndSecurity {
+    flex-direction: column;
+  }
+}
+.card-profil .card-profilAndSecurity .card-personal-info,
+.card-profil .card-profilAndSecurity .card-security-info {
+  background-color: var(--primary-background);
+  border-radius: 6px;
+  padding: 15px;
+  flex: 2;
+}
+.card-profil .card-profilAndSecurity .card-personal-info .h2-cardProfil,
+.card-profil .card-profilAndSecurity .card-security-info .h2-cardProfil {
+  font-family: var(--font-title);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+.card-profil .card-profilAndSecurity .card-personal-info .card-info,
+.card-profil .card-profilAndSecurity .card-security-info .card-info {
+  font-family: var(--font-text);
+  font-size: 1rem;
+  color: var(--secondary-fonts);
+  margin-bottom: 10px;
+}
+.card-profil .card-profilAndSecurity .btn-modifier {
+  align-self: flex-start;
+  display: inline-block;
+  background-color: var(--secondary-color);
+  color: var(--third-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-family: var(--font-text);
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+.card-profil .card-profilAndSecurity .btn-modifier:hover {
+  background-color: var(--primary-color);
+}
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border: 3px solid var(--secondary-color);
+}
+.user-table tbody tr {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: var(--primary-background);
+  cursor: pointer;
+}
+.user-table tbody tr:hover {
+  border: 1.8px solid var(--primary-color);
+  background-color: var(--secondary-background);
+  color: var(--secondary-color);
+  transform: scale(1.02);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+.user-table th,
+.user-table td {
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--primary-color);
+}
+.user-table th {
+  background-color: var(--primary-color);
+  color: var(--third-color);
+  font-family: var(--font-title);
+}
+@media (max-width: 768px) {
+  .user-table th {
+    display: none;
+  }
+  .user-table td {
+    display: block;
+    width: 100%;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  .user-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}

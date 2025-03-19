@@ -56,12 +56,11 @@ ob_start();
         <div class="card-profile-photo">
             <?php
             $photoFile = 'assets/uploads/users/' . $user->getPhoto();
-            $photoPath = (file_exists($photoFile) && !empty($user->getPhoto()))
-                ? $photoFile
-                : 'assets/uploads/users/u_default.jpg';
-                var_dump($photoFile);
+            $photoFile = 'assets/uploads/users/' . $user->getPhoto();
+            $photoPath = (is_file($photoFile) && !empty($user->getPhoto())) ? $photoFile : 'assets/uploads/users/u_default.jpg';
+            // var_dump($photoFile);
             ?>
-            <img src="<?= htmlspecialchars($photoFile) ?>" alt="Photo de profil" class="user-photo">
+            <img src="<?= htmlspecialchars($photoPath) ?>" alt="Photo de profil" class="user-photo">
             <a href="?page=update-photo" class="btn-modifier">Modifier</a>
         </div>
     </div>
@@ -87,10 +86,9 @@ ob_start();
     </div>
 <?php endif; ?>
 
-<script src="./scripts/profilUser.js"></script>
+<script src="./scripts/Users/profilUser.js"></script>
 
 <?php
 $content = ob_get_clean();
 $pageTitle = "Mon Profil - ResaR";
 require __DIR__ .  "/../layout.php";
-?>

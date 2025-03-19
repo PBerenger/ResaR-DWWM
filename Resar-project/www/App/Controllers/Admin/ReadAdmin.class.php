@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controllers\User;
+namespace App\Controllers\Admin;
 
-use App\Config\DbConnect;
 use App\Models\User;
+use App\Config\DbConnect;
 
-class ReadUser
+class ReadAdmin
 {
     public function execute()
     {
@@ -34,6 +34,8 @@ class ReadUser
             exit;
         }
 
+        $usersList = $userModel->getAllUsers();
+        
         // Si l'utilisateur n'existe pas, afficher une erreur
         if (!$user) {
             echo "Utilisateur introuvable.";
@@ -41,6 +43,6 @@ class ReadUser
         }
 
         // Inclure la vue du profil utilisateur et passer les données
-        require __DIR__ . '/../../Views/Profils/profilUser_view.php';
+        require __DIR__ . '/../../Views/Admin/adminHome_view.php';
     }
 }

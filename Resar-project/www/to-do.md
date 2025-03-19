@@ -1,3 +1,8 @@
+admin :
+- vérifier les ERREURs d'injection sql
+
+
+
 pour User.class :
 - upload image profil
 

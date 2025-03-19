@@ -76,7 +76,7 @@ ob_start();
     <div class="rrestaurant-img-background"></div>
 </div>
 
-<script src="./scripts/registerRestaurant.js"></script>
+<script src="./scripts/Register/registerRestaurant.js"></script>
 
 <?php
 $content = ob_get_clean();

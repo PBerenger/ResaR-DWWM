@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 
 //Empêcher le document d’expirer lorsque nous voulons revenir à une page avec une demande POST
 ini_set('session.cache_limiter', 'public');
@@ -16,10 +20,14 @@ spl_autoload_register(function ($class) {
 
 require_once "../Config/DbConnect.php";
 
-use App\Controllers\{LoginUser, Restaurants, Home, Search};
-use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
-use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser, UpdatePhoto};
 use App\Config\DbConnect;
+
+use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
+use App\Controllers\Admin\{ReadAdmin};
+// use App\Controllers\Owner\{ReadOwner};
+use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
+use App\Controllers\Restaurants\{ReadRestaurant, Details};
+use App\Controllers\User\{ReadUser, UpdateUser, DeleteUser, UpdatePhoto};
 use App\Models\User;
 
 $pdo = DbConnect::getPDO();
@@ -40,12 +48,12 @@ try {
         //case search
 
         case 'restaurants-list':
-            (new Restaurants\ReadRestaurant())->execute($_POST);
+            (new ReadRestaurant())->execute($_POST);
             break;
 
         case 'restaurant-details':
             $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-            (new Restaurants\Details())->execute($id);
+            (new Details())->execute($id);
             break;
 
         case 'register-user':
@@ -74,6 +82,15 @@ try {
             $controller->execute($_POST);
             break;
 
+        case 'admin-home':
+            (new ReadAdmin())->execute();
+            break;
+
+        // case 'owner-home':
+        //     (new ReadOwner())->execute();
+        //     break;
+
+            
         case 'update-photo':
             $controller = new UpdatePhoto();
             $controller->execute($_POST, $_FILES);
@@ -84,22 +101,6 @@ try {
         //----------------------------------------------------------------------------------
 
 
-        // case 'login-owner':
-        //     if (isset($_POST['loginSubmit'])) {
-        //         $loginController = new LoginUser();
-        //         $loginController->execute($_POST);
-        //     }
-        //     break;
-
-
-        // case 'admin_restaurant':
-        //     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-        //         require '../App/Views/admin_restaurant.php';
-        //     } else {
-        //         header("HTTP/1.1 403 Forbidden");
-        //         echo "Accès refusé.";
-        //     }
-        //     break;
 
         case 'error':
             require '../App/Views/error.php';
@@ -110,10 +111,10 @@ try {
             break;
 
         case 'logout':
-            session_start();  // Démarre la session pour s'assurer qu'elle est active
-            session_unset();  // Libère toutes les variables de session
-            session_destroy();  // Détruit la session
-            header("Location: ?page=home");  // Redirige vers la page d'accueil
+            session_start();
+            session_unset();
+            session_destroy();
+            header("Location: ?page=home");
             exit;
             break;
 
@@ -124,6 +125,10 @@ try {
             break;
     }
 } catch (Exception $e) {
+    error_log($e->getMessage()); // Log l'erreur dans le fichier d'erreurs PHP
     $errorMessage = $e->getMessage();
+    echo "<h1>Erreur rencontrée</h1>";
+    echo "<p>{$errorMessage}</p>";
     require "../App/Views/error.php";
 }
+

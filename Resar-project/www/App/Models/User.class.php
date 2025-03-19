@@ -44,7 +44,7 @@ class User
     }
     public function getPhone(): string
     {
-        return $this->phone;
+        return $this->phone ?? 'Numéro introuvable';
     }
     public function getPhoto(): string
     {
@@ -102,7 +102,7 @@ class User
     }
     public function setRole(array|string $role): void
     {
-        $this->role = is_array($role) ? $role : explode(",", $role);
+        $this->role = is_array($role) ? $role : [$role];
     }
     public function setCreatedAt(string $createdAt): void
     {
@@ -111,18 +111,36 @@ class User
 
     //----------------------------------------------------------------
     // METHODES
+
+    private function commonUser(array $userData): User
+    {
+        $newUser = new User($this->pdo);
+        $newUser->idUsers = $userData["idUsers"];
+        $newUser->firstName = $userData["firstName"];
+        $newUser->lastName = $userData["lastName"];
+        $newUser->email = $userData["email"];
+        $newUser->phone = $userData["phone"] ?? "";
+        $newUser->password = $userData["password"];
+        $newUser->photo = $userData["photo"] ?? 'u_default.jpg';
+        $newUser->createdAt = $userData["created_at"] ?: "";
+        $newUser->setRole($userData["roles"] ?? "");
+
+        return $newUser;
+    }
+
     public function findUserById(?int $id): ?User
     {
-        $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.roleName) AS roles, 
-                                        CONCAT('Public/assets/uploads/users/', p.photo_path) AS photo
-                                        FROM users u
-                                        LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
-                                        LEFT JOIN roles r ON ur.role_id = r.idRole
-                                        LEFT JOIN user_photos up ON u.idUsers = up.user_id
-                                        LEFT JOIN photos p ON up.photo_id = p.idPhoto
-                                        WHERE u.idUsers = ?
-                                        GROUP BY u.idUsers");
-
+        $stmt = $this->pdo->prepare("SELECT u.*, 
+                                       GROUP_CONCAT(r.roleName) AS roles,
+                                       p.photo_path AS photo
+                                FROM users u
+                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
+                                LEFT JOIN roles r ON ur.role_id = r.idRole
+                                LEFT JOIN user_photos up ON u.idUsers = up.user_id
+                                LEFT JOIN photos p ON up.photo_id = p.idPhoto
+                                WHERE u.idUsers = ?
+                                GROUP BY u.idUsers, p.photo_path
+                                ");
         $stmt->execute([$id]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -152,21 +170,7 @@ class User
         return null;
     }
 
-    private function commonUser(array $userData): User
-    {
-        $newUser = new User($this->pdo);
-        $newUser->idUsers = $userData["idUsers"];
-        $newUser->firstName = $userData["firstName"];
-        $newUser->lastName = $userData["lastName"];
-        $newUser->email = $userData["email"];
-        $newUser->phone = $userData["phone"] ?? "";
-        $newUser->password = $userData["password"];
-        $newUser->photo = $userData["photo"] ?? 'u_default.jpg';
-        $newUser->createdAt = $userData["created_at"] ?: "";
-        $newUser->setRole($userData["roles"] ?? "");
 
-        return $newUser;
-    }
 
 
 
@@ -260,75 +264,87 @@ class User
         }
     }
 
-
-    public static function getAllUsers(\PDO $pdo): array
+    public function getAllUsers(): array
     {
-        $stmt = $pdo->prepare("SELECT 
-                                u.idUsers AS id,
-                                u.email,
-                                u.firstName,
-                                u.lastName,
-                                u.password,
-                                u.created_at AS createdAt,
-                                GROUP_CONCAT(r.roleName) AS roles
-                            FROM users u
-                            LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
-                            LEFT JOIN roles r ON ur.role_id = r.idRole
-                            GROUP BY u.idUsers");
-        $stmt->execute();
-        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT 
+                                        u.idUsers, 
+                                        u.firstName, 
+                                        u.lastName, 
+                                        u.email, 
+                                        u.phone, 
+                                        u.created_at,
+               GROUP_CONCAT(DISTINCT r.roleName) AS roles,
+               COUNT(DISTINCT res.idReservations) AS totalReservations,
+               COUNT(DISTINCT rest.idRestaurants) AS totalOwnedRestaurants
+                    FROM users u
+                    LEFT JOIN user_roles ur ON u.idUsers = ur.user_id
+                    LEFT JOIN roles r ON ur.role_id = r.idRole
+                    LEFT JOIN reservations res ON u.idUsers = res.user_id
+                    LEFT JOIN restaurants rest ON u.idUsers = rest.owner_id
+                    GROUP BY u.idUsers
+                    ORDER BY u.created_at DESC
+    ");
 
-        return array_map([self::class, 'commonUser'], $results);
+        $stmt = $this->pdo->prepare("SELECT * FROM users ORDER BY idUsers ASC");
+        $stmt->execute();
+        $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $users ?: [];
     }
+
+
+
 
     // ----------------------------------------------------------------
     // GESTION DES PHOTOS
 
-    public function uploadPhotoUser($userId, $file)
+    public function uploadPhotoUser($userId, $file, $croppedImage = null)
     {
-        // Vérification des erreurs
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            return ['error' => 'Erreur lors du téléchargement.'];
-        }
+        if ($croppedImage) {
+            // Extraire le contenu base64
+            list($type, $croppedImageData) = explode(';', $croppedImage);
+            list(, $croppedImageData) = explode(',', $croppedImageData);
+            $croppedImageData = base64_decode($croppedImageData);
 
-        // Validation du type MIME
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($file['type'], $allowedTypes)) {
-            return ['error' => 'Type de fichier non autorisé.'];
-        }
+            // Validation du type MIME
+            $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif'];
+            preg_match('/data:image\/(.*);base64/', $croppedImage, $matches);
+            $extension = isset($matches[1]) ? $matches[1] : null;
 
-        // Définir le dossier d'upload
-        $uploadDir = __DIR__ . '/../../Public/assets/uploads/users/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
+            if (!$extension || !array_key_exists("image/$extension", $allowedTypes)) {
+                return ['error' => 'Type de fichier non autorisé.'];
+            }
 
-        $filename = uniqid() . '-' . basename($file['name']);
-        $uploadPath = $uploadDir . $filename;
+            // Upload directory
+            $uploadDir = __DIR__ . '/../../Public/assets/uploads/users/';
+            if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
+                return ['error' => 'Impossible de créer le dossier d\'upload.'];
+            }
 
-        // Déplacement du fichier
-        if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-            return ['error' => 'Échec du déplacement du fichier.'];
-        }
+            $fileName = 'user_' . $userId . '_' . time() . '.' . $extension;
+            $uploadPath = $uploadDir . $fileName;
 
-        // Insertion dans la table photos
-        $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
-        $stmt->bindValue(':photo_path', 'Public/assets/uploads/users/' . $filename, \PDO::PARAM_STR);
-        if (!$stmt->execute()) {
-            return ['error' => 'Erreur lors de l\'enregistrement en base.'];
-        }
+            if (file_put_contents($uploadPath, $croppedImageData) === false) {
+                return ['error' => 'Erreur lors de l\'écriture du fichier.'];
+            }
 
-        $photoId = $this->pdo->lastInsertId();
+            // Enregistrement en base
+            $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
+            $stmt->bindValue(':photo_path', 'Public/assets/uploads/users/' . $fileName, \PDO::PARAM_STR);
+            if (!$stmt->execute()) {
+                return ['error' => 'Erreur lors de l\'enregistrement en base.'];
+            }
 
-        // Liaison avec l'utilisateur
-        $stmt = $this->pdo->prepare("INSERT INTO user_photos (user_id, photo_id) VALUES (:user_id, :photo_id)");
-        $stmt->bindValue(':user_id', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+            $photoId = $this->pdo->lastInsertId();
+            $stmt = $this->pdo->prepare("INSERT INTO user_photos (user_id, photo_id) VALUES (:user_id, :photo_id)");
+            $stmt->bindValue(':user_id', $userId, \PDO::PARAM_INT);
+            $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
 
-        if ($stmt->execute()) {
-            return ['success' => 'Photo mise à jour avec succès.'];
-        } else {
-            return ['error' => 'Erreur lors de la liaison utilisateur-photo.'];
+            if ($stmt->execute()) {
+                return ['success' => 'Photo mise à jour avec succès.', 'path' => 'Public/assets/uploads/users/' . $fileName];
+            } else {
+                return ['error' => 'Erreur lors de la liaison utilisateur-photo.'];
+            }
         }
     }
 }

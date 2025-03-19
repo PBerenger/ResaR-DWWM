@@ -35,12 +35,24 @@ ob_start();
                         <label for="phone">Téléphone :</label>
                         <input type="text" name="phone" id="phone" value="<?= htmlspecialchars($user->getPhone()) ?>" required>
                     </div>
+                    <?php if ($_SESSION['role'] === 'admin'): ?>
+                        <div class="card-info">
+                            <label for="roles">Rôle :</label>
+                            <select name="roles" id="roles" required>
+                                <option value="user" <?= $user->getRole() === 'user' ? 'selected' : '' ?>>Utilisateur</option>
+                                <option value="admin" <?= $user->getRole() === 'admin' ? 'selected' : '' ?>>Administrateur</option>
+                                <option value="owner" <?= $user->getRole() === 'owner' ? 'selected' : '' ?>>Propriétaire</option>
+                            </select>
+                        </div>
+                    <?php endif; ?>
                 </div>
+
 
                 <div class="card-action">
                     <button type="button" class="btn-modifier" onclick="showPopup()">Enregistrer les modifications</button>
-                    <a href="?page=profil-user" class="btn-retour">Annuler</a>
+                    <a href="<?= $_SESSION['role'] === 'admin' ? '?page=admin-home' : '?page=profil-user' ?>" class="btn-retour">Annuler</a>
                 </div>
+
 
                 <!-- Popup -->
                 <div id="confirmationPopup" class="popup-overlay">
@@ -56,10 +68,9 @@ ob_start();
     </div>
 </div>
 
-<script src="./scripts/updateUser.js"></script>
+<script src="./scripts/Users/updateUser.js"></script>
 
 <?php
 $content = ob_get_clean();
 $pageTitle = "Modifier mes informations - ResaR";
 require __DIR__ .  "/../layout.php";
-?>

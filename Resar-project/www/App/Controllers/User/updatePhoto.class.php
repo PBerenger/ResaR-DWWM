@@ -18,7 +18,12 @@ class UpdatePhoto
         $photoProfil = new user($pdo);
 
         if (isset($postData['submit_photo'])) {
-            $result = $photoProfil->uploadPhotoUser($_SESSION['user_id'], $filesData['profile_photo']);
+            $result = $photoProfil->uploadPhotoUser(
+                $_SESSION['user_id'],
+                $filesData['profile_photo'] ?? null,
+                $postData['cropped_image'] ?? null
+            );
+            
 
             if (isset($result['error'])) {
                 $error = $result['error'];

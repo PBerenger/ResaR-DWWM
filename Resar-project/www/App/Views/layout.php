@@ -21,6 +21,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <link rel="stylesheet" href="/css/users/profilUser.css">
     <link rel="stylesheet" href="/css/users/updateUser.css">
+    
+    <link rel="stylesheet" href="/css/admin/adminHome.css">
+
 
 </head>
 
@@ -44,7 +47,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <button id="btn-general" onclick="window.location.href='?page=register-restaurant'" title="Inscrire mon restaurant">Vous êtes restaurateur</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=admin'" title="Administration">Administration</button>
+                        <button id="btn-general" onclick="window.location.href='?page=admin-home'" title="Administration">Administration</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
                         <button id="btn-general" onclick="window.location.href='?page=profil-user'" title="Profil Utilisateur">Profil</button>
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>

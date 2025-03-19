@@ -61,8 +61,7 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<script src="./scripts/restaurant-details.js"></script>
-
+<script src="./scripts/Restaurants/restaurant-details.js"></script>
 
 <?php
 $content = ob_get_clean();
