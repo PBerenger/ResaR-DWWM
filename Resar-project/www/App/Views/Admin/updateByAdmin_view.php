@@ -11,17 +11,25 @@ ob_start();
 
     <div class="card-profil">
         <div class="card-profilAndSecurity">
+
+            <?php if (isset($_SESSION['error_message'])): ?>
+                <div class="alert alert-error">
+                    <?= htmlspecialchars($_SESSION['error_message']) ?>
+                </div>
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
+
             <!-- Formulaire de modification des informations personnelles -->
-            <form method="POST" action="?page=update-user">
+            <form method="POST" action="?page=update-by-admin&id=<?= $user->getId() ?>">
                 <div class="card-personal-info">
                     <h2 class="h2-cardProfil">Informations personnelles</h2>
                     <div class="card-info">
-                        <label for="firstName">Nom :</label>
-                        <input type="text" name="firstName" id="firstName" value="<?= htmlspecialchars($user->getFirstName()) ?>" required>
+                        <label for="firstName">Prénom :</label>
+                        <input type="text" id="firstName" name="firstName" value="<?= htmlspecialchars($user->getFirstName()) ?>" required>
                     </div>
                     <div class="card-info">
-                        <label for="lastName">Prénom :</label>
-                        <input type="text" name="lastName" id="lastName" value="<?= htmlspecialchars($user->getLastName()) ?>" required>
+                        <label for="lastName">Nom :</label>
+                        <input type="text" id="lastName" name="lastName" value="<?= htmlspecialchars($user->getLastName()) ?>" required>
                     </div>
                 </div>
 
@@ -29,20 +37,21 @@ ob_start();
                     <h2 class="h2-cardProfil">Informations de sécurité</h2>
                     <div class="card-info">
                         <label for="email">Email :</label>
-                        <input type="email" name="email" id="email" value="<?= htmlspecialchars($user->getEmail()) ?>">
+                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user->getEmail()) ?>" required>
                     </div>
                     <div class="card-info">
                         <label for="phone">Téléphone :</label>
-                        <input type="text" name="phone" id="phone" value="<?= htmlspecialchars($user->getPhone()) ?>" required>
+                        <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($user->getPhone()) ?>">
                     </div>
 
                     <div class="card-info">
-                        <label for="roles">Rôle :</label>
-                        <select name="roles" id="roles" required>
-                            <option value="user" <?= $user->getRole() === 'user' ? 'selected' : '' ?>>Utilisateur</option>
-                            <option value="admin" <?= $user->getRole() === 'admin' ? 'selected' : '' ?>>Administrateur</option>
-                            <option value="owner" <?= $user->getRole() === 'owner' ? 'selected' : '' ?>>Propriétaire</option>
-                        </select>
+                        <label>Rôles :</label>
+                        <?php
+                        $roles = $user->getRole();
+                        ?>
+                        <label><input type="checkbox" name="roles[]" value="client" <?= in_array('client', $roles) ? 'checked' : '' ?>> Utilisateur</label>
+                        <label><input type="checkbox" name="roles[]" value="admin" <?= in_array('admin', $roles) ? 'checked' : '' ?>> Administrateur</label>
+                        <label><input type="checkbox" name="roles[]" value="owner" <?= in_array('owner', $roles) ? 'checked' : '' ?>> Propriétaire</label>
                     </div>
                 </div>
 
@@ -51,7 +60,6 @@ ob_start();
                     <button type="button" class="btn-modifier" onclick="showPopup()">Enregistrer les modifications</button>
                     <a href="<?= $_SESSION['role'] === 'admin' ? '?page=admin-home' : '?page=profil-user' ?>" class="btn-retour">Annuler</a>
                 </div>
-
 
                 <!-- Popup -->
                 <div id="confirmationPopup" class="popup-overlay">
@@ -67,7 +75,7 @@ ob_start();
 
 </div>
 
-<script src="./scripts/Users/updateUser.js"></script>
+<script src="./scripts/Admin/updateByAdmin.js"></script>
 
 <?php
 $content = ob_get_clean();

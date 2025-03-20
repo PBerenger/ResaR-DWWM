@@ -62,7 +62,7 @@ ob_start();
             </div>
 
         </div>
-        <a href="?page=update-by-admin" class="btn-modifier">Modifier vos informations</a>
+        <a href="?page=update-by-admin&id=<?= $user->getId() ?>" class="btn-modifier">Modifier vos informations</a>
     </div>
 </div>
 

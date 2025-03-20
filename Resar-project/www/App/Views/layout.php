@@ -12,19 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'ResaR') ?></title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/error-success.css">
-    <link rel="stylesheet" href="/css/restaurants.css">
-    <link rel="stylesheet" href="/css/restaurant-details.css">
-    <link rel="stylesheet" href="/css/registerRestaurant.css">
-
-    <link rel="stylesheet" href="/css/users/profilUser.css">
-    <link rel="stylesheet" href="/css/users/updateUser.css">
-    
-    <link rel="stylesheet" href="/css/admin/adminHome.css">
-
-
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
@@ -44,15 +32,19 @@ if (session_status() === PHP_SESSION_NONE) {
             <ul class="nav-links">
                 <li><button id="btn-general" onclick="window.location.href='?page=restaurants-list'" title="Liste des restaurants">Restaurants</button></li>
                 <li>
+                    <!-- sans connexion -->
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <button id="btn-general" onclick="window.location.href='?page=register-restaurant'" title="Inscrire mon restaurant">Vous êtes restaurateur</button>
-                    <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+
+                        <!-- client et admin -->
+                    <?php elseif (isset($_SESSION['role']) && ($_SESSION['role'] === 'client' || $_SESSION['role'] === 'owner' || $_SESSION['role'] === 'admin')): ?>
                         <button id="btn-general" onclick="window.location.href='?page=admin-home'" title="Administration">Administration</button>
-                    <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=profil-user'" title="Profil Utilisateur">Profil</button>
+
+                        <!-- owner-admin -->
                     <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>
                         <button id="btn-general" onclick="window.location.href='?page=myRestaurant&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">Mon restaurant</button>
                     <?php endif; ?>
+
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li><button id="btn-general" onclick="window.location.href='?page=logout'" title="Déconnexion">Déconnexion</button></li>

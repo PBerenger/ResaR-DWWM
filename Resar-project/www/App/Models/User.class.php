@@ -16,7 +16,7 @@ class User
     private string $password;
     private string $photo;
     private array $role = [];
-    private string $createdAt;
+    private string $createdAt = '';
 
 
     public function __construct(?\PDO $pdo = null)
@@ -63,8 +63,9 @@ class User
     }
     public function getCreatedAt(): string
     {
-        return $this->createdAt;
+        return $this->createdAt ?? '';
     }
+
 
     // SETTERS
 
@@ -102,8 +103,18 @@ class User
     }
     public function setRole(array|string $role): void
     {
-        $this->role = is_array($role) ? $role : [$role];
+        $allowedRoles = ['client', 'admin', 'owner'];
+        $roles = is_array($role) ? $role : [$role];
+
+        foreach ($roles as $r) {
+            if (!in_array($r, $allowedRoles)) {
+                throw new \InvalidArgumentException("Rôle invalide : $r");
+            }
+        }
+
+        $this->role = $roles;
     }
+
     public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;
@@ -141,14 +152,23 @@ class User
                                 WHERE u.idUsers = ?
                                 GROUP BY u.idUsers, p.photo_path
                                 ");
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE idUsers = ?");
         $stmt->execute([$id]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user) {
-            $user["roles"] = $user["roles"] ?? "";
-            $user["photo"] = $user["photo_path"] ?? "u_default.jpg";
-            return $this->commonUser($user);
+            $userInstance = new self($this->pdo);
+            $userInstance->idUsers = $user['idUsers'];
+            $userInstance->firstName = $user['firstName'];
+            $userInstance->lastName = $user['lastName'];
+            $userInstance->email = $user['email'];
+            $userInstance->phone = $user['phone'] ?? '';
+            $userInstance->loadRoles();
+            $userInstance->password = $user['password'];
+            $userInstance->createdAt = $user['created_at'] ?? '';
+            return $userInstance;
         }
+
         return null;
     }
 
@@ -170,12 +190,26 @@ class User
         return null;
     }
 
+    public function loadRoles(): void
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT r.roleName 
+        FROM roles r
+        JOIN user_roles ur ON r.idRole = ur.role_id
+        WHERE ur.user_id = ?");
+
+        $stmt->execute([$this->idUsers]);
+
+        $roles = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        $this->role = $roles ?: []; // S'assure que $this->role est toujours un tableau
+    }
+
     public function deleteUserById(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE idUsers = ?");
 
         if (!$stmt->execute([$id])) {
-            error_log("Erreur SQL : " . implode(" - ", $stmt->errorInfo()));
+            error_log("Erreur SQL [deleteUserById] : " . implode(" | ", $stmt->errorInfo()));
             return false;
         }
 

@@ -29,11 +29,11 @@ ob_start();
                     <h2 class="h2-cardProfil">Informations de sécurité</h2>
                     <div class="card-info">
                         <label for="email">Email :</label>
-                        <input type="email" name="email" id="email" value="<?= htmlspecialchars($user->getEmail()) ?>">
+                        <input type="email" name="email" id="email" value="<?= htmlspecialchars($user->getEmail()) ?>" required>
                     </div>
                     <div class="card-info">
                         <label for="phone">Téléphone :</label>
-                        <input type="text" name="phone" id="phone" value="<?= htmlspecialchars($user->getPhone()) ?>" required>
+                        <input type="text" name="phone" id="phone" value="<?= htmlspecialchars($user->getPhone()) ?>">
                     </div>
                 </div>
 
@@ -42,7 +42,6 @@ ob_start();
                     <button type="button" class="btn-modifier" onclick="showPopup()">Enregistrer les modifications</button>
                     <a href="<?= $_SESSION['role'] === 'admin' ? '?page=admin-home' : '?page=profil-user' ?>" class="btn-retour">Annuler</a>
                 </div>
-
 
                 <!-- Popup -->
                 <div id="confirmationPopup" class="popup-overlay">

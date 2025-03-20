@@ -47,3 +47,22 @@ optionnel :
 - faut il renommer les fichiers controlers et models ?
 - map de l'adresse
 - mails d'informations
+
+
+
+CONNEXIONS
+- CLIENT :
+paul.mercier@example.com
+password1
+
+- CLIENT-ADMIN :
+laura.moreau@example.com
+password6
+
+- OWNER :
+valentine.dupont@example.com
+password11
+
+- OWNER-ADMIN :
+yasmine.perrot@example.com
+password14

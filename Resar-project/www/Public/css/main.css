@@ -1,0 +1,16 @@
+/* Main */
+@import url('style.css');
+@import url('home.css');
+@import url('error-success.css');
+
+/* admin */
+@import url('admin/adminHome.css');
+
+/* Restaurants */
+@import url('Restaurants/restaurants.css');
+@import url('Restaurants/restaurant-details.css');
+@import url('Restaurants/registerRestaurant.css');
+
+/* Users */
+@import url('users/profilUser.css');
+@import url('users/updateUser.css');

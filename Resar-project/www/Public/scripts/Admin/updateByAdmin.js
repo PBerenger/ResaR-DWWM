@@ -1,3 +1,12 @@
+function submitForm() {
+    let checkboxes = document.querySelectorAll('input[name="roles[]"]:checked');
+    if (checkboxes.length === 0) {
+        alert("Veuillez sélectionner au moins un rôle.");
+        return;
+    }
+    document.querySelector("form").submit();
+}
+
 // Fonction pour afficher le popup de confirmation
 function showPopup() {
     const popup = document.getElementById("confirmationPopup");

@@ -1,7 +1,11 @@
+/* Layout */
 @import '../css/layout/nav.css';
 @import '../css/layout/main.css';
 @import '../css/layout/footer.css';
 @import '../css/layout/darkMode.css';
+
+
+/* Router */
 @font-face {
   font-family: "poppins";
   src: url("/assets/Fonts/Poppins/Poppins-Medium.woff2") format("woff2"), url("/assets/Fonts/Poppins/Poppins-Medium.woff") format("woff");
