@@ -114,7 +114,6 @@ class User
 
         $this->role = $roles;
     }
-
     public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;

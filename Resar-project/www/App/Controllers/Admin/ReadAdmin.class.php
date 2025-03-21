@@ -18,31 +18,15 @@ class ReadAdmin
             header("Location: ?page=login-user");
             exit;
         }
-        
+
         // Connexion à la base de données
         $pdo = DbConnect::getPDO();
-        $userId = $_SESSION['user_id'];
-        
-        // Récupérer les informations de l'utilisateur
         $userModel = new User($pdo);
-        $user = $userModel->findUserById($userId);
-        if ($user) {
-            $_SESSION['phone'] = $user->getPhone();
-        } else {
-            $_SESSION['error_message'] = "Numéro de téléphone introuvable.";
-            header("Location: ?page=error");
-            exit;
-        }
-
-        $usersList = $userModel->getAllUsers();
         
-        // Si l'utilisateur n'existe pas, afficher une erreur
-        if (!$user) {
-            echo "Utilisateur introuvable.";
-            exit;
-        }
+        // Récupérer tous les utilisateurs
+        $usersList = $userModel->getAllUsers();
 
-        // Inclure la vue du profil utilisateur et passer les données
+        // Inclure la vue et passer les données
         require __DIR__ . '/../../Views/Admin/adminHome_view.php';
     }
 }

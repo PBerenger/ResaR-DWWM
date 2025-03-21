@@ -20,52 +20,6 @@ ob_start();
     <?php unset($_SESSION['error_message']); ?>
 <?php endif; ?>
 
-<h2>Vos information administrateur :</h2>
-
-<div class="card-profil">
-    <div class="card-profilAndSecurity">
-        <!-- Carte des informations personnelles -->
-        <div class="card-personal-info">
-            <h2 class="h2-cardProfil">Informations personnelles</h2>
-            <div class="card-info">
-                Nom : <?= htmlspecialchars($user->getFirstName()) ?>
-            </div>
-            <div class="card-info">
-                Prénom : <?= htmlspecialchars($user->getLastName()) ?>
-            </div>
-            <div class="card-info">
-                Role(s) : <?= htmlspecialchars(implode(', ', $user->getRole())) ?>
-            </div>
-        </div>
-
-        <!-- Carte des informations de sécurité -->
-        <div class="card-security-info">
-            <h2 class="h2-cardProfil">Informations de sécurité</h2>
-            <div class="card-info">
-                Email : <?= htmlspecialchars($user->getEmail()) ?>
-            </div>
-            <div class="card-info">
-                Téléphone : <?= htmlspecialchars($user->getPhone()) ?>
-            </div>
-            <?php
-            $createdAt = new DateTime($user->getCreatedAt());
-            $fmt = new IntlDateFormatter(
-                'fr_FR',
-                IntlDateFormatter::LONG,
-                IntlDateFormatter::SHORT,
-                'Europe/Paris'
-            );
-            $formattedDate = $fmt->format($createdAt);
-            ?>
-            <div class="card-info">
-                Date de création : <?= $formattedDate ?>
-            </div>
-
-        </div>
-        <a href="?page=update-by-admin&id=<?= $user->getId() ?>" class="btn-modifier">Modifier vos informations</a>
-    </div>
-</div>
-
 
 <h2>Liste des utilisateurs</h2>
 

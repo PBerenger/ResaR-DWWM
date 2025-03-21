@@ -1,3 +1,9 @@
+// Fonction pour soumettre le formulaire
+function confirmSubmitForm() {
+    const form = document.querySelector("form");
+    form.submit();
+}
+
 // Fonction pour afficher le popup de confirmation
 function showPopup() {
     const popup = document.getElementById("confirmationPopup");
@@ -10,14 +16,7 @@ function hidePopup() {
     popup.style.display = "none";
 }
 
-// Fonction pour soumettre le formulaire
-function submitForm() {
-    const form = document.querySelector("form");
-    form.submit();
-    window.location.href = "?page=profil-user";
-}
-
-// Fermer le popup si l'utilisateur clique en dehors de la popup
+// Fermer le popup si l'utilisateur clique en dehors du popup
 window.addEventListener("click", (event) => {
     const popup = document.getElementById("confirmationPopup");
     if (event.target === popup) {

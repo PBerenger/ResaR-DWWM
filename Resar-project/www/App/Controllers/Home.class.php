@@ -45,7 +45,7 @@ class Home
         return $restaurants;
     }
 
-    public static function getRandomReviews(\PDO $pdo, int $limit = 5): array
+    public static function getRandomReviews(\PDO $pdo, int $limit = 3): array
     {
         $query = "SELECT r.idReviews, 
                          r.rating, 

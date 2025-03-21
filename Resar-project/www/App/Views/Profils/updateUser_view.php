@@ -40,15 +40,15 @@ ob_start();
 
                 <div class="card-action">
                     <button type="button" class="btn-modifier" onclick="showPopup()">Enregistrer les modifications</button>
-                    <a href="<?= $_SESSION['role'] === 'admin' ? '?page=admin-home' : '?page=profil-user' ?>" class="btn-retour">Annuler</a>
+                    <a href="<?= in_array('admin', $_SESSION['roles']) ? '?page=profil-user' : '#' ?>" class="btn-retour">Annuler</a>
                 </div>
 
                 <!-- Popup -->
                 <div id="confirmationPopup" class="popup-overlay">
                     <div class="popup">
                         <p>Voulez-vous modifier vos informations ?</p>
-                        <button onclick="submitForm()" class="btn-confirm">Confirmer</button>
-                        <button onclick="hidePopup()" class="btn-cancel">Annuler</button>
+                        <button onclick="confirmSubmitForm()" class="btn-confirm">Confirmer</button>
+                        <button type="button" onclick="hidePopup()" class="btn-cancel">Annuler</button>
                     </div>
                 </div>
             </form>

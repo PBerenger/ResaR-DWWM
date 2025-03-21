@@ -12,8 +12,6 @@ main {
 #btn-general {
   background: none;
   color: var(--secondary-title);
-  min-width: 146px;
-  margin: 10px 0;
   padding: 10px 20px;
   border-radius: 30px;
   font-size: 16px;

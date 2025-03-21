@@ -32,20 +32,36 @@ if (session_status() === PHP_SESSION_NONE) {
             <ul class="nav-links">
                 <li><button id="btn-general" onclick="window.location.href='?page=restaurants-list'" title="Liste des restaurants">Restaurants</button></li>
                 <li>
-                    <!-- sans connexion -->
                     <?php if (!isset($_SESSION['user_id'])): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=register-restaurant'" title="Inscrire mon restaurant">Vous êtes restaurateur</button>
+                        <!-- Utilisateur non connecté -->
+                        <button id="btn-general" onclick="window.location.href='?page=register-restaurant'" title="Inscrire mon restaurant">
+                            Vous êtes restaurateur
+                        </button>
+                    <?php else: ?>
+                        <?php if (in_array('owner', $_SESSION['roles'])): ?>
+                            <!-- Restaurateur -->
+                            <button id="btn-general" onclick="window.location.href='?page=myRestaurant&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">
+                                Profil restaurateur
+                            </button>
+                        <?php endif; ?>
 
-                        <!-- client et admin -->
-                    <?php elseif (isset($_SESSION['role']) && ($_SESSION['role'] === 'client' || $_SESSION['role'] === 'owner' || $_SESSION['role'] === 'admin')): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=admin-home'" title="Administration">Administration</button>
+                        <?php if (in_array('admin', $_SESSION['roles'])): ?>
+                            <!-- Administrateur -->
+                            <button id="btn-general" onclick="window.location.href='?page=admin-home'" title="Administration">
+                                Administration
+                            </button>
+                        <?php endif; ?>
 
-                        <!-- owner-admin -->
-                    <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>
-                        <button id="btn-general" onclick="window.location.href='?page=myRestaurant&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">Mon restaurant</button>
+                        <?php if (in_array('client', $_SESSION['roles'])): ?>
+                            <!-- Client -->
+                            <button id="btn-general" onclick="window.location.href='?page=profil-user'" title="Profil utilisateur">
+                                Profil
+                            </button>
+                        <?php endif; ?>
                     <?php endif; ?>
 
                 </li>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li><button id="btn-general" onclick="window.location.href='?page=logout'" title="Déconnexion">Déconnexion</button></li>
                 <?php else: ?>

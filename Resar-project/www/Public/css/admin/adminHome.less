@@ -16,72 +16,13 @@
     border: 1px solid #f5c6cb;
 }
 
-.card-profil {
-    background-color: var(--secondary-background);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-    .card-profilAndSecurity {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-
-        @media (max-width: 768px) {
-            flex-direction: column;
-        }
-
-
-        .card-personal-info,
-        .card-security-info {
-            background-color: var(--primary-background);
-            border-radius: 6px;
-            padding: 15px;
-            flex: 2;
-
-            .h2-cardProfil {
-                font-family: var(--font-title);
-                color: var(--primary-color);
-                font-size: 1.5rem;
-                margin-bottom: 15px;
-            }
-
-            .card-info {
-                font-family: var(--font-text);
-                font-size: 1rem;
-                color: var(--secondary-fonts);
-                margin-bottom: 10px;
-            }
-        }
-
-        .btn-modifier {
-            align-self: flex-start;
-            display: inline-block;
-            background-color: var(--secondary-color);
-            color: var(--third-color);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            font-family: var(--font-text);
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-
-            &:hover {
-                background-color: var(--primary-color);
-            }
-
-            margin-top: 20px;
-        }
-    }
-}
 
 .user-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
     border: 3px solid var(--secondary-color);
+    font-size: 0.9em;
 
     tbody {
         tr {

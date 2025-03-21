@@ -13,66 +13,12 @@
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
-.card-profil {
-  background-color: var(--secondary-background);
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.card-profil .card-profilAndSecurity {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-@media (max-width: 768px) {
-  .card-profil .card-profilAndSecurity {
-    flex-direction: column;
-  }
-}
-.card-profil .card-profilAndSecurity .card-personal-info,
-.card-profil .card-profilAndSecurity .card-security-info {
-  background-color: var(--primary-background);
-  border-radius: 6px;
-  padding: 15px;
-  flex: 2;
-}
-.card-profil .card-profilAndSecurity .card-personal-info .h2-cardProfil,
-.card-profil .card-profilAndSecurity .card-security-info .h2-cardProfil {
-  font-family: var(--font-title);
-  color: var(--primary-color);
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-}
-.card-profil .card-profilAndSecurity .card-personal-info .card-info,
-.card-profil .card-profilAndSecurity .card-security-info .card-info {
-  font-family: var(--font-text);
-  font-size: 1rem;
-  color: var(--secondary-fonts);
-  margin-bottom: 10px;
-}
-.card-profil .card-profilAndSecurity .btn-modifier {
-  align-self: flex-start;
-  display: inline-block;
-  background-color: var(--secondary-color);
-  color: var(--third-color);
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  text-align: center;
-  font-family: var(--font-text);
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  margin-top: 20px;
-}
-.card-profil .card-profilAndSecurity .btn-modifier:hover {
-  background-color: var(--primary-color);
-}
 .user-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
   border: 3px solid var(--secondary-color);
+  font-size: 0.9em;
 }
 .user-table tbody tr {
   transition: background-color 0.3s ease, transform 0.2s ease;
