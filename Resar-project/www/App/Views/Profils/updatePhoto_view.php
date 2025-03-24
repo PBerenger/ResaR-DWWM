@@ -5,36 +5,26 @@ if (session_status() === PHP_SESSION_NONE) {
 ob_start();
 ?>
 
-<div class="photo-upload-container">
-    <h1>Modifier ma photo de profil</h1>
+<h2>🖼️ Changer votre photo de profil 🖼️</h2>
+<?php if (!empty($message)) : ?>
+    <p><?php echo htmlspecialchars($message); ?></p>
+<?php endif; ?>
 
-    <?php if (isset($error)): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
-    <?php endif; ?>
+<form id="updatePhoto" action="" method="POST" enctype="multipart/form-data">
+    <label for="profilePicInput" class="download-btn">Choisir un fichier</label>
+    <input id="profilePicInput" type="file" name="profile_pic" accept="image/*" onchange="previewImage(event)" style="display: none;">
+    <br>
+    <img id="imagePreview" src="#" alt="Aperçu" style="display: none;">
+    <br>
+    <button type="submit" name="uploadUserPhoto">Mettre à jour</button>
+</form>
 
-    <?php if (isset($success)): ?>
-        <p class="success"><?= htmlspecialchars($success) ?></p>
-    <?php endif; ?>
-
-    <form id="uploadForm" action="?page=update-photo" method="post" enctype="multipart/form-data">
-        <label for="profile_photo">Choisissez une photo :</label>
-        <input type="file" name="profile_photo" id="profile_photo" accept="image/*" required>
-
-        <div class="crop-container">
-            <img id="preview" style="max-width:100%; display:none;">
-        </div>
-
-        <input type="hidden" name="cropped_image" id="cropped_image">
-        <button type="submit" name="submit_photo">Télécharger</button>
-    </form>
-
-    <a href="?page=profil-user" class="btn-back">Retour à mon profil</a>
-</div>
-
-<!-- Inclusion de Cropper.js -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="./scripts/Users/updatePhoto.js"></script>
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+<!-- Cropper.js JS -->
+<script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+
 
 <?php
 $content = ob_get_clean();

@@ -1,4 +1,4 @@
-
+réinitialiser tables photos et user_photos
 
 pour User.class :
 - upload image profil
@@ -22,8 +22,8 @@ optionnel :
 
 
 CONNEXIONS
-- CLIENT : profil
-paul.mercier@example.com OK
+- CLIENT : profil OK
+paul.mercier@example.com
 password1
 
 - CLIENT-ADMIN : administration - profil OK

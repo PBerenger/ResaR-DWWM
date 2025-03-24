@@ -1,0 +1,63 @@
+#updatePhoto {
+  max-width: 650px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--secondary-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+#updatePhoto .download-btn {
+  background-color: var(--secondary-background);
+  color: var(--primary-color);
+  border: 3px solid var(--primary-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: var(--font-text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#updatePhoto .download-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--third-color);
+}
+#updatePhoto canvas,
+#updatePhoto img {
+  display: block;
+  width: 100%;
+  max-width: 626px;
+  height: 626px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+#updatePhoto button {
+  background-color: var(--secondary-color);
+  color: var(--third-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: var(--font-text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#updatePhoto button:hover {
+  background-color: var(--primary-color);
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .update-container {
+    padding: 15px;
+  }
+  .update-container form input[type="file"],
+  .update-container form button {
+    width: 100%;
+  }
+  .update-container form canvas,
+  .update-container form img {
+    max-width: 100%;
+    height: auto;
+  }
+}

@@ -141,17 +141,17 @@ class User
     public function findUserById(?int $id): ?User
     {
         $stmt = $this->pdo->prepare("SELECT u.*, 
-                                       GROUP_CONCAT(r.roleName) AS roles,
-                                       p.photo_path AS photo
-                                FROM users u
-                                LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
-                                LEFT JOIN roles r ON ur.role_id = r.idRole
-                                LEFT JOIN user_photos up ON u.idUsers = up.user_id
-                                LEFT JOIN photos p ON up.photo_id = p.idPhoto
-                                WHERE u.idUsers = ?
-                                GROUP BY u.idUsers, p.photo_path
-                                ");
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE idUsers = ?");
+                                   GROUP_CONCAT(r.roleName) AS roles,
+                                   p.photo_path AS photo
+                            FROM users u
+                            LEFT JOIN user_roles ur ON u.idUsers = ur.user_id 
+                            LEFT JOIN roles r ON ur.role_id = r.idRole
+                            LEFT JOIN user_photos up ON u.idUsers = up.user_id
+                            LEFT JOIN photos p ON up.photo_id = p.idPhoto
+                            WHERE u.idUsers = ?
+                            GROUP BY u.idUsers, p.photo_path
+                            ");
+
         $stmt->execute([$id]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -165,6 +165,7 @@ class User
             $userInstance->loadRoles();
             $userInstance->password = $user['password'];
             $userInstance->createdAt = $user['created_at'] ?? '';
+            $userInstance->photo = $user['photo'] ?? 'u_default.jpg';
             return $userInstance;
         }
 
@@ -331,60 +332,51 @@ class User
         return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
-
-
-
-
     // ----------------------------------------------------------------
     // GESTION DES PHOTOS
 
-    public function uploadPhotoUser($userId, $file, $croppedImage = null)
+    public function uploadPhoto($userId, $file)
     {
-        if ($croppedImage) {
-            // Extraire le contenu base64
-            list($type, $croppedImageData) = explode(';', $croppedImage);
-            list(, $croppedImageData) = explode(',', $croppedImageData);
-            $croppedImageData = base64_decode($croppedImageData);
+        if (!isset($file['name']) || empty($file['name'])) {
+            return "Aucune image sélectionnée.";
+        }
 
-            // Validation du type MIME
-            $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif'];
-            preg_match('/data:image\/(.*);base64/', $croppedImage, $matches);
-            $extension = isset($matches[1]) ? $matches[1] : null;
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return "Format d'image non autorisé.";
+        }
 
-            if (!$extension || !array_key_exists("image/$extension", $allowedTypes)) {
-                return ['error' => 'Type de fichier non autorisé.'];
-            }
+        $maxSize = 2 * 1024 * 1024; // 2 Mo
+        if ($file['size'] > $maxSize) {
+            return "L'image dépasse la taille maximale autorisée (2 Mo).";
+        }
 
-            // Upload directory
-            $uploadDir = __DIR__ . '/../../Public/assets/uploads/users/';
-            if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
-                return ['error' => 'Impossible de créer le dossier d\'upload.'];
-            }
+        $uploadDir = 'uploads/profile_pics/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
 
-            $fileName = 'user_' . $userId . '_' . time() . '.' . $extension;
-            $uploadPath = $uploadDir . $fileName;
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = "user_{$userId}." . $fileExt;
+        $filePath = $uploadDir . $fileName;
 
-            if (file_put_contents($uploadPath, $croppedImageData) === false) {
-                return ['error' => 'Erreur lors de l\'écriture du fichier.'];
-            }
-
-            // Enregistrement en base
+        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+            // Insère dans la BDD
             $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
-            $stmt->bindValue(':photo_path', 'Public/assets/uploads/users/' . $fileName, \PDO::PARAM_STR);
-            if (!$stmt->execute()) {
-                return ['error' => 'Erreur lors de l\'enregistrement en base.'];
-            }
+            $stmt->bindValue(':photo_path', $filePath, \PDO::PARAM_STR);
+            $stmt->execute();
 
             $photoId = $this->pdo->lastInsertId();
+
+            // Lier la photo à l'utilisateur
             $stmt = $this->pdo->prepare("INSERT INTO user_photos (user_id, photo_id) VALUES (:user_id, :photo_id)");
             $stmt->bindValue(':user_id', $userId, \PDO::PARAM_INT);
             $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+            $stmt->execute();
 
-            if ($stmt->execute()) {
-                return ['success' => 'Photo mise à jour avec succès.', 'path' => 'Public/assets/uploads/users/' . $fileName];
-            } else {
-                return ['error' => 'Erreur lors de la liaison utilisateur-photo.'];
-            }
+            return "Photo mise à jour avec succès.";
+        } else {
+            return "Erreur lors du téléchargement de l'image.";
         }
     }
 }

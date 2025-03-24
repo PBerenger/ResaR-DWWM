@@ -2,36 +2,38 @@
 
 namespace App\Controllers\User;
 
-use App\Models\user;
+use App\Models\User;
 use App\Config\DbConnect;
-
 
 class UpdatePhoto
 {
-    public function execute($postData, $filesData)
+    private $db;
+    private $userModel;
+
+    public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        $pdo = DbConnect::getPDO();
-        $photoProfil = new user($pdo);
+        $this->db = DbConnect::getPDO();
+        $this->userModel = new User($this->db);
+    }
 
-        if (isset($postData['submit_photo'])) {
-            $result = $photoProfil->uploadPhotoUser(
-                $_SESSION['user_id'],
-                $filesData['profile_photo'] ?? null,
-                $postData['cropped_image'] ?? null
-            );
-            
+    public function index()
+    {
+        $message = "";
 
-            if (isset($result['error'])) {
-                $error = $result['error'];
+        if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_pic"])) {
+            $userId = $_SESSION['user_id'] ?? null;
+
+            if (!$userId) {
+                $message = "Utilisateur non connecté.";
             } else {
-                $success = $result['success'];
+                $message = $this->userModel->uploadPhoto($userId, $_FILES["profile_pic"]);
             }
         }
 
-        require __DIR__ . '/../../Views/Profils/updatePhoto_view.php';
+        require __DIR__ . "/../../Views/Profils/updatePhoto_view.php";
     }
 }

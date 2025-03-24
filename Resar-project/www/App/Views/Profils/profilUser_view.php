@@ -75,10 +75,9 @@ ob_start();
         <!-- Carte de la photo de profil -->
         <div class="card-profile-photo">
             <?php
-            $photoFile = 'assets/uploads/users/' . $user->getPhoto();
-            $photoFile = 'assets/uploads/users/' . $user->getPhoto();
-            $photoPath = (is_file($photoFile) && !empty($user->getPhoto())) ? $photoFile : 'assets/uploads/users/u_default.jpg';
-            // var_dump($photoFile);
+            $photoPath = (!empty($user->getPhoto()) && is_file($user->getPhoto()))
+                ? $user->getPhoto()
+                : 'assets/uploads/users/u_default.jpg';
             ?>
             <img src="<?= htmlspecialchars($photoPath) ?>" alt="Photo de profil" class="user-photo">
             <a href="?page=update-photo" class="btn-modifier">Modifier</a>

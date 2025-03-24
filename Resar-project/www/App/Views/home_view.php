@@ -70,10 +70,9 @@ ob_start();
                         <div class="review-header">
 
                             <?php
-                            $photoPath = 'assets/uploads/users/u_default.jpg';
-                            if (!empty($review->userPhoto) && file_exists('assets/uploads/users/' . $review->userPhoto)) {
-                                $photoPath = 'assets/uploads/users/' . htmlspecialchars($review->userPhoto);
-                            }
+                            $photoPath = (!empty($review->userPhoto) && is_file('assets/uploads/users/' . $review->userPhoto))
+                                ? 'assets/uploads/users/' . htmlspecialchars($review->userPhoto)
+                                : 'assets/uploads/users/u_default.jpg';
                             ?>
                             <img src="<?= $photoPath ?>" alt="Photo du profil" class="review-user-photo">
 

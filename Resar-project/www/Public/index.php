@@ -84,7 +84,7 @@ try {
 
         case 'update-photo':
             $controller = new UpdatePhoto();
-            $controller->execute($_POST, $_FILES);
+            $controller->index();
             break;
 
         case "delete-user":
