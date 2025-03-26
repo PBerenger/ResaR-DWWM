@@ -132,7 +132,7 @@ class User
         $newUser->phone = $userData["phone"] ?? "";
         $newUser->password = $userData["password"];
         $newUser->photo = $userData["photo"] ?? 'u_default.jpg';
-        $newUser->createdAt = $userData["created_at"] ?: "";
+        $newUser->createdAt = $userData["created_at"] ?? "";
         $newUser->setRole($userData["roles"] ?? "");
 
         return $newUser;
@@ -156,17 +156,7 @@ class User
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user) {
-            $userInstance = new self($this->pdo);
-            $userInstance->idUsers = $user['idUsers'];
-            $userInstance->firstName = $user['firstName'];
-            $userInstance->lastName = $user['lastName'];
-            $userInstance->email = $user['email'];
-            $userInstance->phone = $user['phone'] ?? '';
-            $userInstance->loadRoles();
-            $userInstance->password = $user['password'];
-            $userInstance->createdAt = $user['created_at'] ?? '';
-            $userInstance->photo = $user['photo'] ?? 'u_default.jpg';
-            return $userInstance;
+            return $this->commonUser($user);
         }
 
         return null;
@@ -201,7 +191,7 @@ class User
         $stmt->execute([$this->idUsers]);
 
         $roles = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-        $this->role = $roles ?: []; // S'assure que $this->role est toujours un tableau
+        $this->role = $roles ?: [];
     }
 
     public function deleteUserById(int $id): bool
@@ -218,11 +208,12 @@ class User
 
     public function checkPass(string $passToCheck): bool
     {
-        if (empty($this->password)) {
+        if (empty($this->password) || strlen($this->password) < 60) {
             return false;
         }
         return password_verify($passToCheck, $this->password);
     }
+
 
     public function isAdmin(): bool
     {
@@ -294,6 +285,7 @@ class User
             $userId = $pdo->lastInsertId();
 
             $stmt = $pdo->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
+            $email = strtolower($email);
             $stmt->execute([$userId, $roleId]);
 
             $pdo->commit();
@@ -311,7 +303,9 @@ class User
         $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
 
         $stmt = $this->pdo->prepare("SELECT 
-                                    u.idUsers, 
+                                    u.idUsers,
+                                    u.*, 
+                                    COALESCE(p.photo_path, 'uploads/users/u_default.jpg') AS photo,
                                     u.firstName, 
                                     u.lastName, 
                                     u.email, 
@@ -325,6 +319,8 @@ class User
                                 LEFT JOIN roles r ON ur.role_id = r.idRole
                                 LEFT JOIN reservations res ON u.idUsers = res.user_id
                                 LEFT JOIN restaurants rest ON u.idUsers = rest.owner_id
+                                LEFT JOIN user_photos up ON u.idUsers = up.user_id
+                                LEFT JOIN photos p ON up.photo_id = p.idPhoto
                                 GROUP BY u.idUsers
                                 ORDER BY u.idUsers $order");
 

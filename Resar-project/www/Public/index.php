@@ -39,10 +39,7 @@ try {
 
     switch ($page) {
         case 'home':
-            $restaurantModel = new Home();
-            $restaurants = Home::getRandomRestaurants($pdo);
-            $reviews = Home::getRandomReviews($pdo);
-            require '../App/Views/home_view.php';
+            (new \App\Controllers\Home())->execute();
             break;
 
         //case search
