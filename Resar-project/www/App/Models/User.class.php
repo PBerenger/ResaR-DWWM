@@ -133,7 +133,7 @@ class User
         $newUser->password = $userData["password"];
         $newUser->photo = $userData["photo"] ?? 'u_default.jpg';
         $newUser->createdAt = $userData["created_at"] ?? "";
-        $newUser->setRole($userData["roles"] ?? "");
+        $newUser->setRole(explode(',', $userData["roles"] ?? ""));
 
         return $newUser;
     }

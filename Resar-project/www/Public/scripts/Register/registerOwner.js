@@ -19,3 +19,12 @@ window.onload = function () {
     showSection('personnel');
 };
 
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector(".btn-more-info").addEventListener("click", function (event) {
+        event.preventDefault(); // Empêche le comportement par défaut du lien
+        document.querySelector("#rrestaurant-top").scrollIntoView({
+            behavior: "smooth", // Défilement fluide
+            block: "start" // Alignement en haut
+        });
+    });
+});

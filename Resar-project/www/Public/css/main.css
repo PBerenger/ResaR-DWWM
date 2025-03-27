@@ -6,6 +6,10 @@
 /* admin */
 @import url('admin/adminHome.css');
 
+/* owner */
+@import url('Register/registerRestaurant.css');
+
+
 /* Restaurants */
 @import url('Restaurants/restaurants.css');
 @import url('Restaurants/restaurant-details.css');

@@ -32,50 +32,62 @@ class Restaurant
     {
         return $this->idRestaurants;
     }
+
     public function getOwnerId(): int
     {
         return $this->owner_id;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
-    public function getPhone(): string
+
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
-    public function getDescription(): string
+
+    public function getDescription(): ?string
     {
         return $this->description;
     }
+
     public function getAddress(): string
     {
         return $this->address;
     }
+
     public function getCity(): string
     {
         return $this->city;
     }
+
     public function getZipCode(): string
     {
         return $this->zip_code;
     }
+
     public function getCountry(): string
     {
         return $this->country;
     }
+
     public function getLatitude(): ?float
     {
         return $this->latitude;
     }
+
     public function getLongitude(): ?float
     {
         return $this->longitude;
     }
+
     public function getPhoto(): ?string
     {
         return $this->photo ?? 'r_default.jpg';
     }
+
     public function getCreatedAt(): string
     {
         return $this->created_at;
@@ -86,50 +98,62 @@ class Restaurant
     {
         $this->idRestaurants = $id;
     }
+
     public function setOwner(int $owner_id): void
     {
         $this->owner_id = $owner_id;
     }
+
     public function setName(string $name): void
     {
         $this->name = $name;
     }
-    public function setPhone(string $phone): void
+
+    public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
     }
-    public function setDescription(string $description): void
+
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
+
     public function setAddress(string $address): void
     {
         $this->address = $address;
     }
+
     public function setCity(string $city): void
     {
         $this->city = $city;
     }
+
     public function setZipCode(string $zip_code): void
     {
         $this->zip_code = $zip_code;
     }
+
     public function setCountry(string $country): void
     {
         $this->country = $country;
     }
+
     public function setLatitude(?float $latitude): void
     {
         $this->latitude = $latitude;
     }
+
     public function setLongitude(?float $longitude): void
     {
         $this->longitude = $longitude;
     }
+
     public function setPhoto(?string $photo): void
     {
         $this->photo = $photo ?? 'r_default.jpg';
     }
+
     public function setCreatedAt(string $created_at): void
     {
         $this->created_at = $created_at;
@@ -137,10 +161,11 @@ class Restaurant
 
     //----------------------------------------------------------------
 
+    // CRUD Operations
 
     public function createRestaurant(int $owner_id, string $name, ?string $phone, ?string $description, string $address, string $city, string $zip_code, string $country, ?float $latitude, ?float $longitude, ?string $photo): bool
     {
-        $query = "INSERT INTO Restaurants (
+        $query = "INSERT INTO restaurants (
                 owner_id, 
                 name, 
                 phone, 
@@ -153,8 +178,7 @@ class Restaurant
                 longitude, 
                 photo, 
                 created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                NOW())";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute([$owner_id, $name, $phone, $description, $address, $city, $zip_code, $country, $latitude, $longitude, $photo]);
@@ -162,7 +186,7 @@ class Restaurant
 
     public function update(int $idRestaurants, int $owner_id, string $name, ?string $phone, ?string $description, string $address, string $city, string $zip_code, string $country, ?float $latitude, ?float $longitude, ?string $photo): bool
     {
-        $stmt = $this->pdo->prepare("UPDATE Restaurants 
+        $stmt = $this->pdo->prepare("UPDATE restaurants 
                                     SET owner_id = ?, 
                                     name = ?, phone = ?, 
                                     description = ?, 
@@ -178,15 +202,21 @@ class Restaurant
         return $stmt->execute([$owner_id, $name, $phone, $description, $address, $city, $zip_code, $country, $latitude, $longitude, $photo, $idRestaurants]);
     }
 
-    public function delete(int $idRestaurants): bool
+    public function deleteRestaurantById(int $idRestaurants): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM Restaurants WHERE idRestaurants = ?");
-        return $stmt->execute([$idRestaurants]);
+        $stmt = $this->pdo->prepare("DELETE FROM restaurants WHERE idRestaurants = ?");
+
+        if (!$stmt->execute([$idRestaurants])) {
+            error_log("Erreur SQL [deleteRestaurantById] : " . implode(" | ", $stmt->errorInfo()));
+            return false;
+        }
+
+        return true;
     }
 
     public function getRestaurantFindById(int $idRestaurants): ?Restaurant
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM Restaurants WHERE idRestaurants = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM restaurants WHERE idRestaurants = ?");
         $stmt->execute([$idRestaurants]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -204,7 +234,7 @@ class Restaurant
 
     public function getAllRestaurants(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM Restaurants");
+        $stmt = $this->pdo->query("SELECT * FROM restaurants");
 
         $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -222,6 +252,7 @@ class Restaurant
         return $restaurants;
     }
 
+    // Fonction de récupération des restaurants aléatoires
     public static function getRandomRestaurants(\PDO $pdo): array
     {
         $query = "SELECT r.idRestaurants, 

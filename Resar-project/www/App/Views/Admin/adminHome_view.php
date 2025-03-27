@@ -67,7 +67,6 @@ ob_start();
 
 <script src="./scripts/Admin/adminHome.js"></script>
 
-
 <?php
 $content = ob_get_clean();
 $pageTitle = "Accueil - ResaR";

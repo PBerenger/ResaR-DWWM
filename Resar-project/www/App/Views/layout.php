@@ -34,13 +34,13 @@ if (session_status() === PHP_SESSION_NONE) {
                 <li>
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <!-- Utilisateur non connecté -->
-                        <button id="btn-general" onclick="window.location.href='?page=register-restaurant'" title="Inscrire mon restaurant">
+                        <button id="btn-general" onclick="window.location.href='?page=register-owner'" title="Inscrire mon restaurant">
                             Vous êtes restaurateur
                         </button>
                     <?php else: ?>
                         <?php if (in_array('owner', $_SESSION['roles'])): ?>
                             <!-- Restaurateur -->
-                            <button id="btn-general" onclick="window.location.href='?page=myRestaurant&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">
+                            <button id="btn-general" onclick="window.location.href='?page=owner-home&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">
                                 Profil restaurateur
                             </button>
                         <?php endif; ?>

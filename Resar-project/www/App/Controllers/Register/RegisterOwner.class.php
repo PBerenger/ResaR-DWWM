@@ -5,7 +5,7 @@ namespace App\Controllers\Register;
 use App\Config\DbConnect;
 use \PDOException;
 
-class RegisterRestaurant
+class RegisterOwner
 {
     public function execute(array $postdata)
     {
@@ -55,9 +55,9 @@ class RegisterRestaurant
                         // Récupérer l'ID du nouvel utilisateur
                         $userId = $pdo->lastInsertId();
 
-                        // Ajouter le rôle 'client' dans la table user_roles
-                        $stmtRole = $pdo->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
-                        $stmtRole->execute([$userId, 3]); // 3 pour 'owner'
+                        // Ajouter les rôles 'client' (1) et 'owner' (3) dans la table user_roles
+                        $stmtRole = $pdo->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?), (?, ?)");
+                        $stmtRole->execute([$userId, 1, $userId, 3]);
 
                         // Insérer les informations du restaurant
                         $nomRestaurant = trim($postdata['nomRestaurant']);

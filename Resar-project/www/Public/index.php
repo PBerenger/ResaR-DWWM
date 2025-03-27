@@ -24,8 +24,8 @@ use App\Config\DbConnect;
 
 use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
 use App\Controllers\Admin\{ReadAdmin, UpdateByAdmin, DeleteByAdmin};
-// use App\Controllers\Owner\{ReadOwner};
-use App\Controllers\Register\{RegisterUser, RegisterRestaurant};
+use App\Controllers\Owner\{ReadOwner, UpdateRestaurant, DeleteRestaurant};
+use App\Controllers\Register\{RegisterUser, RegisterOwner};
 use App\Controllers\Restaurants\{ReadRestaurant, Details};
 use App\Controllers\User\{ReadUser, UpdateUser, UpdatePhoto, DeleteUser};
 use App\Models\User;
@@ -64,11 +64,10 @@ try {
             }
             break;
 
-        case 'register-restaurant':
-            (new RegisterRestaurant())->execute($_POST);
-            require '../App/Views/Register/registerRestaurant_view.php';
+        case 'register-owner':
+            (new RegisterOwner())->execute($_POST);
+            require '../App/Views/Register/registerOwner_view.php';
             break;
-
 
         case 'profil-user':
             (new ReadUser())->execute();
@@ -103,10 +102,19 @@ try {
             $controller->execute();
             break;
 
+        case 'owner-home':
+            (new ReadOwner())->execute();
+            break;
 
-        // case 'owner-home':
-        //     (new ReadOwner())->execute();
+        // case 'update-restaurant':
+        //     $controller = new UpdateRestaurant();
+        //     $controller->execute($_POST);
         //     break;
+
+        case "delete-restaurant":
+            $controller = new DeleteRestaurant();
+            $controller->execute();
+            break;
 
 
 

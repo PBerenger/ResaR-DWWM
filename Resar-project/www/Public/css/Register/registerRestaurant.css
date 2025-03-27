@@ -90,6 +90,9 @@
     font-size: 14px;
   }
 }
+.rrestaurant-bot {
+  text-align: center;
+}
 .rrestaurant-bot .rrestaurant-img-background {
   margin-top: 20px;
   background-image: url('/assets/img/table1.jpg');

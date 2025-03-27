@@ -5,14 +5,14 @@ if (session_status() === PHP_SESSION_NONE) {
 ob_start();
 ?>
 
-<div class="rrestaurant-top">
+<div id="rrestaurant-top" class="rrestaurant-top">
     <div class="rrestaurant-présentation">
         <h2>Inscrivez votre restaurant sur</h2>
         <h1><span class="miroir-h">R</span>es<span class="miroir-xy">e</span>R</h1>
         <p>Augmentez vos revenus, dotez-vous d’une meilleure visibilité et fidélisez vos clients...</p>
     </div>
 
-    <form method="POST" action="?page=register-restaurant">
+    <form method="POST" action="?page=register-owner">
         <!-- Section Informations Personnelles -->
         <div class="section section-personnel">
             <h3>Vos informations personnelles</h3>
@@ -74,9 +74,11 @@ ob_start();
 
 <div class="rrestaurant-bot">
     <div class="rrestaurant-img-background"></div>
+    <a href="index.php?page=register-owner#rrestaurant-top" class="btn-more-info">s'inscrire maintenant</a>
 </div>
 
-<script src="./scripts/Register/registerRestaurant.js"></script>
+
+<script src="./scripts/Register/registerOwner.js"></script>
 
 <?php
 $content = ob_get_clean();

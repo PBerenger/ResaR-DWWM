@@ -54,8 +54,8 @@ ob_start();
     <div class="home-mid2">
         <h2>Enregistrez votre restaurant</h2>
         <p>Propriétaire d'un restaurant ? Inscrivez-vous pour ajouter votre établissement à notre base de données.</p>
-        <a href="index.php?page=register-restaurant" class="btn-more-info">Enregistrer un restaurant</a>
-        <a href="index.php?page=register-restaurant#rrestaurant-mid" class="btn-more-info">En savoir plus</a>
+        <a href="index.php?page=register-owner" class="btn-more-info">Enregistrer un restaurant</a>
+        <a href="index.php?page=register-owner#rrestaurant-mid" class="btn-more-info">En savoir plus</a>
     </div>
 
     <div class="home-img-background2"></div>
