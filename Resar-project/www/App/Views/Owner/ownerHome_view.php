@@ -22,37 +22,41 @@ ob_start();
 
 
 <h1>Mon profil Restaurateur</h1>
+<a class="btn-ajouter" href="?page=create-restaurant">Ajouter un restaurant</a>
+<div class="card-restaurant">
+    <?php if (!empty($restaurants)) : ?>
+        <ul>
+            <?php foreach ($restaurants as $restaurant) : ?>
+                <li>
+                    <h2><?= htmlspecialchars($restaurant['name']) ?></h2>
+                    <div class="restaurant-details">
+                        <div class="infos-restaurant">
+                            <p>Adresse : <?= htmlspecialchars($restaurant['address']) ?></p>
+                            <p>Téléphone : <?= htmlspecialchars($restaurant['phone']) ?></p>
+                        </div>
+                        <div class="description-restaurant">
+                            <p>Description : <?= htmlspecialchars($restaurant['description']) ?></p>
+                        </div>
+                    </div>
 
-<?php if (!empty($restaurants)) : ?>
-    <ul>
-        <?php foreach ($restaurants as $restaurant) : ?>
-            <li>
-                <h2><?= htmlspecialchars($restaurant['name']) ?></h2>
-                <p>Adresse : <?= htmlspecialchars($restaurant['address']) ?></p>
-                <p>Téléphone : <?= htmlspecialchars($restaurant['phone']) ?></p>
-                <p>Description : <?= htmlspecialchars($restaurant['description']) ?></p>
-
-                <!-- <a href="?page=owner-reservations&id=<?= $restaurant['id'] ?>">Voir les réservations</a>
-                <a href="?page=owner-menu&id=<?= $restaurant['id'] ?>">Voir le menu</a> -->
-
-                <!-- <a href="?page=update-restaurant&id=<?= $restaurant['id'] ?>">Modifier</a> -->
-                <div class="card-action">
-                    <form method="POST" action="?page=delete-restaurant" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ? Cette action est irréversible.')">
-                        <input type="hidden" name="restaurant_id" value="<?= htmlspecialchars($restaurant['idRestaurants']) ?>">
-                        <button type="submit" class="btn-supprimer">❌ Supprimer le restaurant ❌</button>
-                    </form>
-                </div>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php else : ?>
-    <p>Aucun restaurant enregistré.</p>
-<?php endif; ?>
-
-<a href="?page=addRestaurant">Ajouter un restaurant</a>
+                    <div class="card-action">
+                        <form method="POST" action="?page=delete-restaurant" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ? Cette action est irréversible.')">
+                            <input type="hidden" name="restaurant_id" value="<?= htmlspecialchars($restaurant['idRestaurants']) ?>">
+                            <button type="submit" class="btn-supprimer">❌ Supprimer le restaurant ❌</button>
+                        </form>
+                        <a class="btn-modifier" href="?page=update-restaurant">modifier les informations de ce restaurant</a>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else : ?>
+        <p>Aucun restaurant enregistré.</p>
+    <?php endif; ?>
+</div>
 
 
-<script src="./scripts/Admin/adminHome.js"></script>
+
+<!-- <script src="./scripts/Admin/adminHome.js"></script> -->
 
 <?php
 $content = ob_get_clean();

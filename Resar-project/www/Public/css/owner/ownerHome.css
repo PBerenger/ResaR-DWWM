@@ -1,0 +1,57 @@
+.card-restaurant {
+  width: 100%;
+  background-color: var(--primary-background);
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+.card-restaurant .restaurant-details {
+  display: flex;
+  gap: 20px;
+}
+.card-restaurant .infos-restaurant,
+.card-restaurant .description-restaurant {
+  flex: 1;
+}
+.card-restaurant .description-restaurant {
+  max-width: 60%;
+}
+.card-restaurant .card-action {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+}
+.card-restaurant .card-action .btn-supprimer {
+  background-color: var(--secondary-background);
+  color: red;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.card-restaurant .card-action .btn-supprimer:hover {
+  color: var(--secondary-background);
+  background-color: #ff7a7a;
+}
+.btn-modifier,
+.btn-ajouter {
+  text-align: center;
+  background-color: var(--secondary-color);
+  color: var(--third-color);
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1.5;
+  height: 40px;
+  cursor: pointer;
+}
+.btn-modifier:hover,
+.btn-ajouter:hover {
+  background-color: var(--primary-color);
+  color: var(--third-color);
+}

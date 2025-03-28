@@ -252,6 +252,14 @@ class Restaurant
         return $restaurants;
     }
 
+    public function updateRestaurant($id, $name, $phone, $description, $address, $city, $zip_code, $country, $photo)
+    {
+        $stmt = $this->pdo->prepare("UPDATE restaurants 
+                                 SET name = ?, phone = ?, description = ?, address = ?, city = ?, zip_code = ?, country = ?, restaurant_photo = ?
+                                 WHERE idRestaurants = ?");
+        return $stmt->execute([$name, $phone, $description, $address, $city, $zip_code, $country, $photo, $id]);
+    }
+
     // Fonction de récupération des restaurants aléatoires
     public static function getRandomRestaurants(\PDO $pdo): array
     {

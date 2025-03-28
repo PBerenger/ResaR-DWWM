@@ -24,9 +24,9 @@ use App\Config\DbConnect;
 
 use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
 use App\Controllers\Admin\{ReadAdmin, UpdateByAdmin, DeleteByAdmin};
-use App\Controllers\Owner\{ReadOwner, UpdateRestaurant, DeleteRestaurant};
+use App\Controllers\Owner\{ReadOwner, DeleteRestaurant};
 use App\Controllers\Register\{RegisterUser, RegisterOwner};
-use App\Controllers\Restaurants\{ReadRestaurant, Details};
+use App\Controllers\Restaurants\{ReadRestaurant, Details, UpdateRestaurant, CreateRestaurant};
 use App\Controllers\User\{ReadUser, UpdateUser, UpdatePhoto, DeleteUser};
 use App\Models\User;
 
@@ -39,7 +39,7 @@ try {
 
     switch ($page) {
         case 'home':
-            (new \App\Controllers\Home())->execute();
+            (new Home())->execute();
             break;
 
         //case search
@@ -106,10 +106,16 @@ try {
             (new ReadOwner())->execute();
             break;
 
-        // case 'update-restaurant':
-        //     $controller = new UpdateRestaurant();
-        //     $controller->execute($_POST);
-        //     break;
+        case 'update-restaurant':
+            $controller = new UpdateRestaurant();
+            $controller->execute($_POST);
+            require '../App/Views/Restaurants/updateRestaurant_view.php';
+            break;
+
+        case 'create-restaurant':
+            // (new CreateRestaurant())->execute($_POST , $_SESSION['user_id']);
+            require '../App/Views/Restaurants/createRestaurant_view.php';
+            break;
 
         case "delete-restaurant":
             $controller = new DeleteRestaurant();
