@@ -163,6 +163,14 @@ class Restaurant
 
     // CRUD Operations
 
+    public function getRestaurantByOwnerId($ownerId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM restaurants WHERE owner_id = ?");
+        $stmt->execute([$ownerId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+
     public function createRestaurant(int $owner_id, string $name, ?string $phone, ?string $description, string $address, string $city, string $zip_code, string $country, ?float $latitude, ?float $longitude, ?string $photo): bool
     {
         $query = "INSERT INTO restaurants (
@@ -184,28 +192,83 @@ class Restaurant
         return $stmt->execute([$owner_id, $name, $phone, $description, $address, $city, $zip_code, $country, $latitude, $longitude, $photo]);
     }
 
-    public function update(int $idRestaurants, int $owner_id, string $name, ?string $phone, ?string $description, string $address, string $city, string $zip_code, string $country, ?float $latitude, ?float $longitude, ?string $photo): bool
-    {
-        $stmt = $this->pdo->prepare("UPDATE restaurants 
-                                    SET owner_id = ?, 
-                                    name = ?, phone = ?, 
-                                    description = ?, 
-                                    address = ?, 
-                                    city = ?, 
-                                    zip_code = ?, 
-                                    country = ?, 
-                                    latitude = ?, 
-                                    longitude = ?, 
-                                    photo = ? 
-                                    WHERE idRestaurants = ?");
+    public function updateRestaurant(
+        int $idRestaurants,
+        int $owner_id,
+        string $name,
+        ?string $phone,
+        ?string $description,
+        string $address,
+        string $city,
+        string $zip_code,
+        string $country,
+        ?float $latitude,
+        ?float $longitude,
+        ?string $photoPath
+    ): bool {
+        // 1. Si la photo a été fournie, on insère d'abord la nouvelle photo dans la table 'photos'
+        if ($photoPath) {
+            // Insertion de la photo dans la table 'photos'
+            $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
+            $stmt->bindValue(':photo_path', $photoPath, \PDO::PARAM_STR);
+            $stmt->execute();
 
-        return $stmt->execute([$owner_id, $name, $phone, $description, $address, $city, $zip_code, $country, $latitude, $longitude, $photo, $idRestaurants]);
+            // Récupérer l'ID de la photo insérée
+            $photoId = $this->pdo->lastInsertId();
+
+            // 2. Mettre à jour la relation entre le restaurant et la photo dans la table 'restaurant_photos'
+            $stmt = $this->pdo->prepare("REPLACE INTO restaurant_photos (restaurant_id, photo_id) 
+                                         VALUES (:restaurant_id, :photo_id)");
+            $stmt->bindValue(':restaurant_id', $idRestaurants, \PDO::PARAM_INT);
+            $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+            $stmt->execute();
+        }
+
+        // 3. Mettre à jour les autres informations du restaurant
+        $stmt = $this->pdo->prepare("
+            UPDATE restaurants 
+            SET owner_id = :owner_id, 
+                name = :name, 
+                phone = :phone, 
+                description = :description, 
+                address = :address, 
+                city = :city, 
+                zip_code = :zip_code, 
+                country = :country, 
+                latitude = :latitude, 
+                longitude = :longitude
+            WHERE idRestaurants = :idRestaurants
+        ");
+
+        $stmt->bindValue(':owner_id', $owner_id, \PDO::PARAM_INT);
+        $stmt->bindValue(':name', $name, \PDO::PARAM_STR);
+        $stmt->bindValue(':phone', $phone ?? null, $phone ? \PDO::PARAM_STR : \PDO::PARAM_NULL);
+        $stmt->bindValue(':description', $description ?? null, $description ? \PDO::PARAM_STR : \PDO::PARAM_NULL);
+        $stmt->bindValue(':address', $address, \PDO::PARAM_STR);
+        $stmt->bindValue(':city', $city, \PDO::PARAM_STR);
+        $stmt->bindValue(':zip_code', $zip_code, \PDO::PARAM_STR);
+        $stmt->bindValue(':country', $country, \PDO::PARAM_STR);
+        $stmt->bindValue(':latitude', $latitude ?? null, $latitude !== null ? \PDO::PARAM_STR : \PDO::PARAM_NULL);
+        $stmt->bindValue(':longitude', $longitude ?? null, $longitude !== null ? \PDO::PARAM_STR : \PDO::PARAM_NULL);
+        $stmt->bindValue(':idRestaurants', $idRestaurants, \PDO::PARAM_INT);
+
+        return $stmt->execute();
     }
 
     public function deleteRestaurantById(int $idRestaurants): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM restaurants WHERE idRestaurants = ?");
+        // Vérification si le restaurant existe avant de le supprimer
+        $stmt = $this->pdo->prepare("SELECT idRestaurants FROM restaurants WHERE idRestaurants = ?");
+        $stmt->execute([$idRestaurants]);
+        $restaurant = $stmt->fetch();
 
+        if (!$restaurant) {
+            error_log("Restaurant non trouvé avec l'ID : $idRestaurants");
+            return false;  // Si le restaurant n'existe pas, on retourne false
+        }
+
+        // Si le restaurant existe, on procède à la suppression
+        $stmt = $this->pdo->prepare("DELETE FROM restaurants WHERE idRestaurants = ?");
         if (!$stmt->execute([$idRestaurants])) {
             error_log("Erreur SQL [deleteRestaurantById] : " . implode(" | ", $stmt->errorInfo()));
             return false;
@@ -221,7 +284,7 @@ class Restaurant
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($result) {
-            $restaurant = new Restaurant();
+            $restaurant = new Restaurant(null);
             foreach ($result as $key => $value) {
                 if (property_exists($restaurant, $key)) {
                     $restaurant->$key = $value;
@@ -250,14 +313,6 @@ class Restaurant
         }
 
         return $restaurants;
-    }
-
-    public function updateRestaurant($id, $name, $phone, $description, $address, $city, $zip_code, $country, $photo)
-    {
-        $stmt = $this->pdo->prepare("UPDATE restaurants 
-                                 SET name = ?, phone = ?, description = ?, address = ?, city = ?, zip_code = ?, country = ?, restaurant_photo = ?
-                                 WHERE idRestaurants = ?");
-        return $stmt->execute([$name, $phone, $description, $address, $city, $zip_code, $country, $photo, $id]);
     }
 
     // Fonction de récupération des restaurants aléatoires
@@ -351,5 +406,29 @@ class Restaurant
         $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
 
         return str_repeat('★', $fullStars) . $halfStar . str_repeat('☆', $emptyStars);
+    }
+
+    public function uploadPhoto($restaurantId, $file)
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            throw new \Exception("Erreur lors du téléchargement de la photo.");
+        }
+
+        $targetDir = __DIR__ . "/../../public/uploads/restaurant_photos/";
+        $targetFile = $targetDir . basename($file["name"]);
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        // Vérification du type de fichier
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array($imageFileType, $allowedTypes)) {
+            throw new \Exception("Type de fichier non autorisé.");
+        }
+
+        // Déplacement du fichier téléchargé
+        if (!move_uploaded_file($file["tmp_name"], $targetFile)) {
+            throw new \Exception("Erreur lors du déplacement du fichier.");
+        }
+
+        return $targetFile;
     }
 }

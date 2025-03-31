@@ -4,26 +4,33 @@ namespace App\Controllers\Restaurants;
 
 use App\Config\DbConnect;
 use App\Models\Restaurant;
+use App\Models\User;
 use Exception;
 
 class UpdateRestaurant
 {
-    public function execute(array $postdata)
+    private $restaurantModel;
+
+    public function __construct()
+    {
+        $this->restaurantModel = new Restaurant(DbConnect::getPDO());
+    }
+
+    public function execute(array $postdata, $restaurantId = null)
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        $pdo = DbConnect::getPDO();
-        $restaurantModel = new Restaurant($pdo);
-
-        if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-            $_SESSION['error_message'] = "Aucun restaurant sélectionné.";
+        // Vérification de l'ID (transmis par le routeur)
+        if ($restaurantId === null || !is_numeric($restaurantId)) {
+            $_SESSION['error_message'] = "Aucun restaurant valide sélectionné.";
             header("Location: ?page=error");
             exit;
         }
 
-        $restaurantId = $_GET['id'];
+        $pdo = DbConnect::getPDO();
+        $restaurantModel = new Restaurant($pdo);
         $restaurant = $restaurantModel->getRestaurantFindById($restaurantId);
 
         if (!$restaurant) {
@@ -32,7 +39,7 @@ class UpdateRestaurant
             exit;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_restaurant'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $name = htmlspecialchars(trim($postdata['name']));
                 $phone = htmlspecialchars(trim($postdata['phone']));
@@ -42,39 +49,34 @@ class UpdateRestaurant
                 $zip_code = htmlspecialchars(trim($postdata['zip_code']));
                 $country = htmlspecialchars(trim($postdata['country']));
 
+                $ownerId = $_SESSION['user_id'] ?? $restaurant->getOwnerId();
+
                 // Gestion de la photo
-                if (!empty($_FILES['restaurant_photo']['name'])) {
-                    $targetDir = "uploads/restaurants/";
-                    $fileName = time() . "_" . basename($_FILES["restaurant_photo"]["name"]);
-                    $targetFilePath = $targetDir . $fileName;
-                    $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-
-                    $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
-                    if (in_array($fileType, $allowTypes)) {
-                        if (move_uploaded_file($_FILES["restaurant_photo"]["tmp_name"], $targetFilePath)) {
-                            $photoPath = $targetFilePath;
-                        } else {
-                            throw new Exception("Erreur lors du téléchargement de l'image.");
-                        }
-                    } else {
-                        throw new Exception("Format d'image non valide. Utilisez JPG, PNG, JPEG ou GIF.");
-                    }
+                if (!$restaurantId) {
+                    $message = "Utilisateur non connecté.";
                 } else {
-                    $photoPath = $restaurant->getPhoto();
+                    $photoPath = $restaurant->uploadPhoto($restaurantId, $_FILES["restaurant_pic"]);
+                    if (!empty($_FILES["restaurant_pic"]["name"])) {
+                        $photoPath = $this->restaurantModel->uploadPhoto($restaurantId, $_FILES["restaurant_pic"]);
+                    }
                 }
-
-                $restaurantModel->updateRestaurant($restaurantId, $name, $phone, $description, $address, $city, $zip_code, $country, $photoPath);
+                // Mise à jour en base de données
+                $restaurantModel->updateRestaurant($restaurantId, $ownerId, $name, $phone, $description, $address, $city, $zip_code, $country, null, null, $photoPath);
+                echo "huhu";
 
                 $_SESSION['success_message'] = "Modification réussie !";
-                header("Location: ?page=restaurants");
+                header("Location: ?page=owner-home");
                 exit;
-
             } catch (Exception $e) {
                 error_log("Erreur SQL : " . $e->getMessage());
-                $_SESSION['error_message'] = "Une erreur est survenue.";
+                die("Erreur détectée : " . $e->getMessage());
+                $_SESSION['error_message'] = "Une erreur est survenue. Impossible de modifier les informations du restaurant.";
+                header("Location: ?page=error");
+                exit;
             }
         }
 
+        // Affichage de la vue
         require '../App/Views/Restaurants/updateRestaurant_view.php';
     }
 }

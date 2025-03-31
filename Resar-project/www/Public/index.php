@@ -24,9 +24,9 @@ use App\Config\DbConnect;
 
 use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
 use App\Controllers\Admin\{ReadAdmin, UpdateByAdmin, DeleteByAdmin};
-use App\Controllers\Owner\{ReadOwner, DeleteRestaurant};
+use App\Controllers\Owner\{ReadOwner};
 use App\Controllers\Register\{RegisterUser, RegisterOwner};
-use App\Controllers\Restaurants\{ReadRestaurant, Details, UpdateRestaurant, CreateRestaurant};
+use App\Controllers\Restaurants\{ReadRestaurant, Details, UpdateRestaurant, DeleteRestaurant, CreateRestaurant};
 use App\Controllers\User\{ReadUser, UpdateUser, UpdatePhoto, DeleteUser};
 use App\Models\User;
 
@@ -39,6 +39,7 @@ try {
 
     switch ($page) {
         case 'home':
+            $controller = new Home();
             (new Home())->execute();
             break;
 
@@ -108,9 +109,9 @@ try {
 
         case 'update-restaurant':
             $controller = new UpdateRestaurant();
-            $controller->execute($_POST);
-            require '../App/Views/Restaurants/updateRestaurant_view.php';
+            $controller->execute($_POST, $_POST['id'] ?? $_GET['id'] ?? null);
             break;
+
 
         case 'create-restaurant':
             // (new CreateRestaurant())->execute($_POST , $_SESSION['user_id']);

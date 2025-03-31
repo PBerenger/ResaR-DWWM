@@ -6,11 +6,26 @@ if (session_status() === PHP_SESSION_NONE) {
 ob_start();
 ?>
 
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success">
+        <?= htmlspecialchars($_SESSION['success_message']) ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-error">
+        <?= htmlspecialchars($_SESSION['error_message']) ?>
+    </div>
+    <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
+
+
 <h2>Modifier les informations du restaurant</h2>
 
 <?php if (isset($_SESSION['error_message'])): ?>
     <p style="color: red;"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></p>
-<?php endif; ?>
+    <?php endif; ?>
 
 <form action="?page=update-restaurant&id=<?= $restaurant->getId(); ?>" method="POST" enctype="multipart/form-data">
     <label>Nom du restaurant :</label>
@@ -35,10 +50,11 @@ ob_start();
     <input type="text" name="country" value="<?= htmlspecialchars($restaurant->getCountry()); ?>" required>
 
     <label>Photo du restaurant :</label>
-    <input type="file" name="restaurant_photo">
+    <input type="file" name="restaurant_pic" accept="image/*">
+    <p>Actuelle :</p>
     <img src="<?= htmlspecialchars($restaurant->getPhoto()); ?>" alt="Photo actuelle" width="100">
 
-    <button type="submit" name="update_restaurant">Modifier</button>
+    <button type="submit">Modifier</button>
 </form>
 
 <!-- <script src="./scripts/Users/updateUser.js"></script> -->

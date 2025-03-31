@@ -29,10 +29,22 @@ ob_start();
             <?php foreach ($restaurants as $restaurant) : ?>
                 <li>
                     <h2><?= htmlspecialchars($restaurant['name']) ?></h2>
+                    <div class="card-restaurant-photo">
+                        <?php
+                        $photoPathRestaurant = (!empty($restaurant['photo_path']) && is_file($restaurant['photo_path']))
+                            ? $restaurant['photo_path']
+                            : 'assets/uploads/restaurants/r_default.jpg';
+                        ?>
+                        <img src="<?= htmlspecialchars($photoPath) ?>" alt="Photo de restaurant" class="restaurant-photo">
+                    </div>
+
                     <div class="restaurant-details">
                         <div class="infos-restaurant">
                             <p>Adresse : <?= htmlspecialchars($restaurant['address']) ?></p>
                             <p>Téléphone : <?= htmlspecialchars($restaurant['phone']) ?></p>
+                            <p>Ville : <?= htmlspecialchars($restaurant['city']) ?></p>
+                            <p>Pays : <?= htmlspecialchars($restaurant['country']) ?></p>
+                            <p>Code postal : <?= htmlspecialchars($restaurant['zip_code']) ?></p>
                         </div>
                         <div class="description-restaurant">
                             <p>Description : <?= htmlspecialchars($restaurant['description']) ?></p>
@@ -44,7 +56,7 @@ ob_start();
                             <input type="hidden" name="restaurant_id" value="<?= htmlspecialchars($restaurant['idRestaurants']) ?>">
                             <button type="submit" class="btn-supprimer">❌ Supprimer le restaurant ❌</button>
                         </form>
-                        <a class="btn-modifier" href="?page=update-restaurant">modifier les informations de ce restaurant</a>
+                        <a class="btn-modifier" href="?page=update-restaurant&id=<?= htmlspecialchars($restaurant['idRestaurants']) ?>">modifier les informations de ce restaurant</a>
                     </div>
                 </li>
             <?php endforeach; ?>
