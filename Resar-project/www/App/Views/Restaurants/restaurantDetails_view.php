@@ -36,7 +36,7 @@ ob_start();
             <p>Date de création : <?= htmlspecialchars($restaurant->getCreatedAt()); ?></p>
 
             <button class="btn-view-dishes">Voir le menu</button>
-            <a href="restaurant_resa.php?id=<?= urlencode($restaurant->getId()); ?>" class="btn-more-resa">Réserver</a>
+            <a href="index.php?page=restaurant-reservation&id=<?= urlencode($restaurant->getId()); ?>" class="btn-more-resa">Réserver</a>
         </div>
     </div>
 </div>
@@ -61,7 +61,7 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<script src="./scripts/Restaurants/restaurant-details.js"></script>
+<script src="./scripts/Restaurants/restaurantDetails.js"></script>
 
 <?php
 $content = ob_get_clean();

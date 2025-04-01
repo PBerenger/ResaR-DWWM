@@ -30,7 +30,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <button id="close-menu" class="close-menu">&times;</button>
 
             <ul class="nav-links">
-                <li><button id="btn-general" onclick="window.location.href='?page=restaurants-list'" title="Liste des restaurants">Restaurants</button></li>
+                <li><button id="btn-general" onclick="window.location.href='?page=restaurants-list'" title="Liste des restaurants">Tous les restaurants</button></li>
                 <li>
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <!-- Utilisateur non connecté -->
@@ -41,7 +41,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?php if (in_array('owner', $_SESSION['roles'])): ?>
                             <!-- Restaurateur -->
                             <button id="btn-general" onclick="window.location.href='?page=owner-home&id=<?= $_SESSION['user_id'] ?>'" title="Profil Restaurateur">
-                                Profil restaurateur
+                                Vos restaurants
                             </button>
                         <?php endif; ?>
 

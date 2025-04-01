@@ -342,7 +342,7 @@ class User
             return "Format d'image non autorisé.";
         }
 
-        $maxSize = 2 * 1024 * 1024; // 2 Mo
+        $maxSize = 2 * 1024 * 1024;
         if ($file['size'] > $maxSize) {
             return "L'image dépasse la taille maximale autorisée (2 Mo).";
         }

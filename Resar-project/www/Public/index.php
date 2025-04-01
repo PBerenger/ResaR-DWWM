@@ -26,7 +26,7 @@ use App\Controllers\{home, LoginRestaurant, LoginUser, Search};
 use App\Controllers\Admin\{ReadAdmin, UpdateByAdmin, DeleteByAdmin};
 use App\Controllers\Owner\{ReadOwner};
 use App\Controllers\Register\{RegisterUser, RegisterOwner};
-use App\Controllers\Restaurants\{ReadRestaurant, Details, UpdateRestaurant, DeleteRestaurant, CreateRestaurant};
+use App\Controllers\Restaurants\{ReadRestaurant, Details, UpdateRestaurant, DeleteRestaurant, CreateRestaurant, Reservation};
 use App\Controllers\User\{ReadUser, UpdateUser, UpdatePhoto, DeleteUser};
 use App\Models\User;
 
@@ -39,7 +39,6 @@ try {
 
     switch ($page) {
         case 'home':
-            $controller = new Home();
             (new Home())->execute();
             break;
 
@@ -52,6 +51,11 @@ try {
         case 'restaurant-details':
             $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
             (new Details())->execute($id);
+            break;
+
+        case 'restaurant-reservation':
+            $controller = new Reservation();
+            $controller->execute($_GET['id']);
             break;
 
         case 'register-user':

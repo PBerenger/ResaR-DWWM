@@ -90,7 +90,7 @@ ob_start();
 <div class="profilUser-réservation">
     <h2>Réserver une table dans un restaurant</h2>
     <p>Choisissez parmis une liste de restaurants près de chez vous et reservez une table</p>
-    <a class="btn-more-resa">Réserver</a>
+    <a href="?page=restaurants-list" class="btn-more-resa">Réserver</a>
 </div>
 
 <!-- popup -->

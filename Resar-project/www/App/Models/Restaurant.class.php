@@ -408,6 +408,75 @@ class Restaurant
         return str_repeat('★', $fullStars) . $halfStar . str_repeat('☆', $emptyStars);
     }
 
+    // RESERVATION
+    public function getReservation()
+    {
+        $pdo = DbConnect::getPDO();
+        $slots = [];
+
+        // Créneaux du midi (12h00 - 14h00)
+        for ($hour = 12; $hour < 14; $hour++) {
+            foreach (["00", "30"] as $minute) {
+                $slots[] = sprintf('%02d:%s', $hour, $minute);
+            }
+        }
+
+        // Créneaux du soir (19h00 - 22h00)
+        for ($hour = 19; $hour < 22; $hour++) {
+            foreach (["00", "30"] as $minute) {
+                $slots[] = sprintf('%02d:%s', $hour, $minute);
+            }
+        }
+
+        return $slots;
+    }
+
+    public function bookSlot($restaurantId, $userId, $date, $time)
+    {
+        $query = "INSERT INTO reservations (restaurant_id, user_id, date, time) VALUES (:restaurantId, :userId, :date, :time)";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindValue(':restaurantId', $restaurantId, \PDO::PARAM_INT);
+        $stmt->bindValue(':userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':date', $date, \PDO::PARAM_STR);
+        $stmt->bindValue(':time', $time, \PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+
+    // public function getReservationById($id)
+    // {
+    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE id = ?");
+    //     $stmt->execute([$id]);
+    //     return $stmt->fetch(\PDO::FETCH_ASSOC);
+    // }
+    // public function getReservationsByRestaurantId($restaurantId)
+    // {
+    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE restaurant_id = ?");
+    //     $stmt->execute([$restaurantId]);
+    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    // }
+    // public function getReservationsByUserId($userId)
+    // {
+    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE user_id = ?");
+    //     $stmt->execute([$userId]);
+    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    // }
+    // public function createReservation($restaurantId, $userId, $date, $time)
+    // {
+    //     $stmt = $this->pdo->prepare("INSERT INTO reservations (restaurant_id, user_id, date, time) VALUES (?, ?, ?, ?)");
+    //     return $stmt->execute([$restaurantId, $userId, $date, $time]);
+    // }
+    // public function updateReservation($id, $restaurantId, $userId, $date, $time)
+    // {
+    //     $stmt = $this->pdo->prepare("UPDATE reservations SET restaurant_id = ?, user_id = ?, date = ?, time = ? WHERE id = ?");
+    //     return $stmt->execute([$restaurantId, $userId, $date, $time, $id]);
+    // }
+    // public function deleteReservation($id)
+    // {
+    //     $stmt = $this->pdo->prepare("DELETE FROM reservations WHERE id = ?");
+    //     return $stmt->execute([$id]);
+    // }
+
+
     public function uploadPhoto($restaurantId, $file)
     {
         if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -430,5 +499,97 @@ class Restaurant
         }
 
         return $targetFile;
+    }
+
+    // upload restaurants photos
+    public function uploadRestaurantPhoto($userId, $file)
+    {
+        if (!isset($file['name']) || empty($file['name'])) {
+            return "Aucune image sélectionnée.";
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return "Format d'image non autorisé.";
+        }
+
+        $maxSize = 2 * 1024 * 1024;
+        if ($file['size'] > $maxSize) {
+            return "L'image dépasse la taille maximale autorisée (2 Mo).";
+        }
+
+        $uploadDir = 'uploads/restaurant_pics/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = "user_{$userId}." . $fileExt;
+        $filePath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+            // Insère dans la BDD
+            $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
+            $stmt->bindValue(':photo_path', $filePath, \PDO::PARAM_STR);
+            $stmt->execute();
+
+            $photoId = $this->pdo->lastInsertId();
+
+            // Lier la photo au restaurant
+            $stmt = $this->pdo->prepare("INSERT INTO restaurant_photos (restaurant_id, photo_id) VALUES (:restaurant_id, :photo_id)");
+            $stmt->bindValue(':restaurant_id', $userId, \PDO::PARAM_INT);
+            $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            return "Photo mise à jour avec succès.";
+        } else {
+            return "Erreur lors du téléchargement de l'image.";
+        }
+    }
+
+    // upload restaurants photos
+    public function uploadDishPhoto($userId, $file)
+    {
+        if (!isset($file['name']) || empty($file['name'])) {
+            return "Aucune image sélectionnée.";
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return "Format d'image non autorisé.";
+        }
+
+        $maxSize = 2 * 1024 * 1024;
+        if ($file['size'] > $maxSize) {
+            return "L'image dépasse la taille maximale autorisée (2 Mo).";
+        }
+
+        $uploadDir = 'uploads/dish_pics/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = "user_{$userId}." . $fileExt;
+        $filePath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+            // Insère dans la BDD
+            $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
+            $stmt->bindValue(':photo_path', $filePath, \PDO::PARAM_STR);
+            $stmt->execute();
+
+            $photoId = $this->pdo->lastInsertId();
+
+            // Lier la photo au restaurant
+            $stmt = $this->pdo->prepare("INSERT INTO dishes_photos (dish_id, photo_id) VALUES (:dish_id, :photo_id)");
+            $stmt->bindValue(':dish_id', $userId, \PDO::PARAM_INT);
+            $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            return "Photo mise à jour avec succès.";
+        } else {
+            return "Erreur lors du téléchargement de l'image.";
+        }
     }
 }

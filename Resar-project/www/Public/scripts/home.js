@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Récupérer l'ID du restaurant à partir de l'élément HTML (assume que l'ID est stocké en tant qu'attribut de données)
             const restaurantId = slide.getAttribute('data-restaurant-id');
             // Rediriger vers la page de détails du restaurant
-            window.location.href = `index.php?page=restaurant-details&id=${encodeURIComponent(restaurantId)}`;
+            window.location.href = `index.php?page=restaurantDetails&id=${encodeURIComponent(restaurantId)}`;
         });
     });
 });

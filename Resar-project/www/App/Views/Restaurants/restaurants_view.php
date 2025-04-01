@@ -28,7 +28,7 @@ ob_start();
                 <p><strong>Téléphone :</strong> <?= htmlspecialchars($restaurant->getPhone()); ?></p>
 
                 <a href="index.php?page=restaurant-details&id=<?= urlencode($restaurant->getId()); ?>" class="btn-more-info">En savoir plus</a>
-                <a href="restaurant-resa.php?id=<?= urlencode($restaurant->getId()); ?>" class="btn-more-resa">Réserver</a>
+                <a href="index.php?page=restaurant-reservation&id=<?= urlencode($restaurant->getId()); ?>" class="btn-more-resa">Réserver</a>
             </div>
         <?php endforeach; ?>
     <?php else: ?>

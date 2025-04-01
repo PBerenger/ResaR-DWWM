@@ -6,6 +6,7 @@ ob_start();
 ?>
 
 <h2>🖼️ Changer votre photo de profil 🖼️</h2>
+<p>taille maximum : 2 Mo - 1024px/1024px</p>
 <?php if (!empty($message)) : ?>
     <p><?php echo htmlspecialchars($message); ?></p>
 <?php endif; ?>

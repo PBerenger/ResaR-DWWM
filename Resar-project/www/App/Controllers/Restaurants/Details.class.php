@@ -31,7 +31,7 @@ class Details
             $dishes = [];
         }
 
-        require __DIR__ . "/../../Views/Restaurants/restaurant-details_view.php";
+        require __DIR__ . "/../../Views/Restaurants/restaurantDetails_view.php";
     }
 
     public function getDishes(int $id): array
