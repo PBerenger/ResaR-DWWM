@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 ob_start();
-use App\Controllers\Home;
 ?>
 
 <div class="home-container">

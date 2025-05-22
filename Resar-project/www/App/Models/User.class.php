@@ -122,6 +122,16 @@ class User
     //----------------------------------------------------------------
     // METHODES
 
+    /**
+     * Crée un objet User à partir des données récupérées en base.
+     *
+     * Cette méthode instancie un nouvel utilisateur avec ses informations
+     * personnelles, sa photo, sa date de création et ses rôles (convertis en tableau).
+     *
+     * @param array $userData Tableau associatif contenant les données de l'utilisateur
+     *                        (issues d'une requête SQL avec jointures)
+     * @return User Retourne un objet User rempli avec les données fournies
+     */
     private function commonUser(array $userData): User
     {
         $newUser = new User($this->pdo);
@@ -138,6 +148,15 @@ class User
         return $newUser;
     }
 
+    /**
+     * Recherche un utilisateur par son identifiant.
+     *
+     * Cette méthode récupère les informations de l'utilisateur, ses rôles associés
+     * (concaténés dans une seule chaîne) ainsi que le chemin de sa photo de profil.
+     *
+     * @param int|null $id L'identifiant de l'utilisateur (peut être null)
+     * @return User|null Retourne un objet User si trouvé, sinon null
+     */
     public function findUserById(?int $id): ?User
     {
         $stmt = $this->pdo->prepare("SELECT u.*, 
@@ -162,6 +181,14 @@ class User
         return null;
     }
 
+    /**
+     * Recherche un utilisateur en base à partir de son adresse email.
+     *
+     * Récupère les informations de l'utilisateur ainsi que ses rôles, puis les transforme en objet User.
+     *
+     * @param string $email L'adresse email de l'utilisateur à rechercher.
+     * @return User|null Retourne l'objet User correspondant ou null si aucun utilisateur trouvé.
+     */
     public function findUserByEmail(string $email): ?User
     {
         $stmt = $this->pdo->prepare("SELECT u.*, GROUP_CONCAT(r.roleName) AS roles 
@@ -180,6 +207,12 @@ class User
         return null;
     }
 
+    /**
+     * Charge les rôles de l'utilisateur courant depuis la base de données
+     * et les stocke dans la propriété $role.
+     *
+     * @return void
+     */
     public function loadRoles(): void
     {
         $stmt = $this->pdo->prepare("
@@ -194,6 +227,12 @@ class User
         $this->role = $roles ?: [];
     }
 
+    /**
+     * Supprime un utilisateur de la base à partir de son identifiant.
+     *
+     * @param int $id L'identifiant de l'utilisateur à supprimer.
+     * @return bool Retourne true si la suppression a réussi, false sinon.
+     */
     public function deleteUserById(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE idUsers = ?");
@@ -205,7 +244,13 @@ class User
 
         return true;
     }
-
+    
+    /**
+     * Vérifie si le mot de passe donné correspond à celui de l'utilisateur courant.
+     *
+     * @param string $passToCheck Le mot de passe à vérifier.
+     * @return bool true si le mot de passe correspond, false sinon.
+     */
     public function checkPass(string $passToCheck): bool
     {
         if (empty($this->password) || strlen($this->password) < 60) {
@@ -214,13 +259,23 @@ class User
         return password_verify($passToCheck, $this->password);
     }
 
-
+    /**
+     * Vérifie si l'utilisateur courant possède le rôle administrateur.
+     *
+     * @return bool true si l'utilisateur est admin, false sinon.
+     */
     public function isAdmin(): bool
     {
         $roles = $this->getRole();
         return in_array("admin", $roles) || in_array("1", $roles);
     }
 
+    /**
+     * Lève une exception si l'utilisateur courant n'est pas administrateur.
+     *
+     * @throws \Exception Si l'utilisateur n'est pas admin.
+     * @return void
+     */
     public function checkAdmin(): void
     {
         if (!$this->isAdmin()) {
@@ -228,6 +283,14 @@ class User
         }
     }
 
+    /**
+     * Vérifie si un utilisateur donné est administrateur, via son ID.
+     *
+     * @param \PDO $pdo Instance PDO pour les requêtes SQL.
+     * @param int|null $id ID de l'utilisateur à vérifier.
+     * @return User|null Retourne l'utilisateur s'il est admin, ou lève une exception sinon.
+     * @throws \Exception Si l'utilisateur n'existe pas ou n'est pas admin.
+     */
     public static function checkAdminNew(\PDO $pdo, ?int $id): ?User
     {
         $user = (new User($pdo))->findUserById($id);
@@ -237,6 +300,21 @@ class User
         return $user;
     }
 
+    /**
+     * Créé un nouvel utilisateur dans la base de données.
+     *
+     * Vérifie d'abord que l'email n'existe pas déjà, insère l'utilisateur,
+     * puis l'associe à un rôle. Retourne l'objet User créé ou null en cas d'erreur.
+     *
+     * @param \PDO $pdo Connexion PDO.
+     * @param string $firstName Prénom de l'utilisateur.
+     * @param string $lastName Nom de l'utilisateur.
+     * @param string $email Email unique.
+     * @param string $phone Numéro de téléphone.
+     * @param string $password Mot de passe en clair (sera hashé).
+     * @param int $roleId ID du rôle à attribuer (par défaut 2).
+     * @return User|null L'utilisateur créé ou null si l'email existe déjà ou erreur.
+     */
     public static function create(
         \PDO $pdo,
         string $firstName,
@@ -298,6 +376,12 @@ class User
         }
     }
 
+    /**
+     * Récupère la liste de tous les utilisateurs avec leurs infos, rôles, réservations et restaurants.
+     *
+     * @param string $order Ordre de tri (ASC ou DESC) sur les ID utilisateurs.
+     * @return array Tableau d'utilisateurs avec leurs données enrichies.
+     */
     public function getAllUsers(string $order = 'ASC'): array
     {
         $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
@@ -331,6 +415,16 @@ class User
     // ----------------------------------------------------------------
     // GESTION DES PHOTOS
 
+    /**
+     * Télécharge et associe une photo de profil à un utilisateur.
+     *
+     * Vérifie le type, la taille et gère l'upload sur le serveur.
+     * Enregistre la photo dans les tables `photos` et `user_photos`.
+     *
+     * @param int $userId ID de l'utilisateur.
+     * @param array $file Données du fichier provenant du formulaire ($_FILES).
+     * @return string Message de succès ou d'erreur.
+     */
     public function uploadPhoto($userId, $file)
     {
         if (!isset($file['name']) || empty($file['name'])) {
@@ -357,14 +451,12 @@ class User
         $filePath = $uploadDir . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
-            // Insère dans la BDD
             $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
             $stmt->bindValue(':photo_path', $filePath, \PDO::PARAM_STR);
             $stmt->execute();
 
             $photoId = $this->pdo->lastInsertId();
 
-            // Lier la photo à l'utilisateur
             $stmt = $this->pdo->prepare("INSERT INTO user_photos (user_id, photo_id) VALUES (:user_id, :photo_id)");
             $stmt->bindValue(':user_id', $userId, \PDO::PARAM_INT);
             $stmt->bindValue(':photo_id', $photoId, \PDO::PARAM_INT);

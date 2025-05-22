@@ -62,7 +62,6 @@ class UpdateRestaurant
                 }
                 // Mise à jour en base de données
                 $restaurantModel->updateRestaurant($restaurantId, $ownerId, $name, $phone, $description, $address, $city, $zip_code, $country, null, null, $photoPath);
-                echo "huhu";
 
                 $_SESSION['success_message'] = "Modification réussie !";
                 header("Location: ?page=owner-home");

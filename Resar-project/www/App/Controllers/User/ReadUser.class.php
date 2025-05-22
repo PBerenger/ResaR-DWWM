@@ -13,17 +13,14 @@ class ReadUser
             session_start();
         }
 
-        // Vérification si l'utilisateur est bien connecté
         if (!isset($_SESSION['user_id'])) {
             header("Location: ?page=login-user");
             exit;
         }
         
-        // Connexion à la base de données
         $pdo = DbConnect::getPDO();
         $userId = $_SESSION['user_id'];
         
-        // Récupérer les informations de l'utilisateur
         $userModel = new User($pdo);
         $user = $userModel->findUserById($userId);
         if ($user) {
@@ -34,13 +31,6 @@ class ReadUser
             exit;
         }
 
-        // Si l'utilisateur n'existe pas, afficher une erreur
-        if (!$user) {
-            echo "Utilisateur introuvable.";
-            exit;
-        }
-
-        // Inclure la vue du profil utilisateur et passer les données
         require __DIR__ . '/../../Views/Profils/profilUser_view.php';
     }
 }

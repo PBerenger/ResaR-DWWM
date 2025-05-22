@@ -4,15 +4,12 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 
-//Empêcher le document d’expirer lorsque nous voulons revenir à une page avec une demande POST
 ini_set('session.cache_limiter', 'public');
 session_cache_limiter(false);
 
-// Autoload des classes avec le namespace comme chemin
 spl_autoload_register(function ($class) {
     $class = str_replace("\\", DIRECTORY_SEPARATOR, $class);
     $path = "../$class.class.php";
-    // echo $path;
     if (file_exists($path)) {
         include $path;
     }
@@ -158,7 +155,7 @@ try {
             break;
     }
 } catch (Exception $e) {
-    error_log($e->getMessage()); // Log l'erreur dans le fichier d'erreurs PHP
+    error_log($e->getMessage());
     $errorMessage = $e->getMessage();
     echo "<h1>Erreur rencontrée</h1>";
     echo "<p>{$errorMessage}</p>";

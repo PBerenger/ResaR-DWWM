@@ -163,6 +163,19 @@ class Restaurant
 
     // CRUD Operations
 
+    /**
+     * Récupère tous les restaurants associés à un propriétaire spécifique.
+     *
+     * Cette méthode exécute une requête SQL pour sélectionner tous les enregistrements
+     * de la table `restaurants` où la colonne `owner_id` correspond à l'identifiant
+     * du propriétaire passé en paramètre.
+     *
+     * @param int $ownerId L'identifiant du propriétaire des restaurants à récupérer.
+     * 
+     * @return array Un tableau associatif contenant toutes les lignes des restaurants
+     *               correspondant au propriétaire, ou un tableau vide si aucun restaurant
+     *               n'est trouvé.
+     */
     public function getRestaurantByOwnerId($ownerId)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM restaurants WHERE owner_id = ?");
@@ -170,7 +183,29 @@ class Restaurant
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-
+    /**
+     * Crée un nouveau restaurant dans la base de données.
+     *
+     * Cette méthode insère un nouvel enregistrement dans la table `restaurants` avec les
+     * informations fournies, telles que le propriétaire, le nom, le téléphone, la description,
+     * l'adresse, la ville, le code postal, le pays, les coordonnées géographiques, et la photo.
+     * La date de création est automatiquement ajoutée avec la fonction `NOW()` dans la base de données.
+     *
+     * @param int $owner_id L'identifiant du propriétaire du restaurant.
+     * @param string $name Le nom du restaurant.
+     * @param string|null $phone Le numéro de téléphone du restaurant (peut être nul).
+     * @param string|null $description La description du restaurant (peut être nulle).
+     * @param string $address L'adresse complète du restaurant.
+     * @param string $city La ville où se trouve le restaurant.
+     * @param string $zip_code Le code postal du restaurant.
+     * @param string $country Le pays du restaurant.
+     * @param float|null $latitude La latitude du restaurant (peut être nulle).
+     * @param float|null $longitude La longitude du restaurant (peut être nulle).
+     * @param string|null $photo Le chemin ou l'URL de la photo du restaurant (peut être nul).
+     * 
+     * @return bool Retourne `true` si l'insertion dans la base de données est réussie, 
+     *              sinon `false` en cas d'échec.
+     */
     public function createRestaurant(int $owner_id, string $name, ?string $phone, ?string $description, string $address, string $city, string $zip_code, string $country, ?float $latitude, ?float $longitude, ?string $photo): bool
     {
         $query = "INSERT INTO restaurants (
@@ -192,6 +227,30 @@ class Restaurant
         return $stmt->execute([$owner_id, $name, $phone, $description, $address, $city, $zip_code, $country, $latitude, $longitude, $photo]);
     }
 
+    /**
+     * Met à jour les informations d'un restaurant dans la base de données.
+     *
+     * Cette méthode met à jour les détails d'un restaurant, y compris le propriétaire,
+     * le nom, le téléphone, la description, l'adresse, la ville, le code postal, le pays,
+     * les coordonnées géographiques, et la photo (si une nouvelle photo est fournie).
+     * Si une nouvelle photo est fournie, elle est insérée dans la table `photos`, et
+     * l'association entre le restaurant et la photo est mise à jour dans la table `restaurant_photos`.
+     *
+     * @param int $idRestaurants L'identifiant du restaurant à mettre à jour.
+     * @param int $owner_id L'identifiant du propriétaire du restaurant.
+     * @param string $name Le nom du restaurant.
+     * @param string|null $phone Le numéro de téléphone du restaurant (peut être nul).
+     * @param string|null $description La description du restaurant (peut être nulle).
+     * @param string $address L'adresse complète du restaurant.
+     * @param string $city La ville où se trouve le restaurant.
+     * @param string $zip_code Le code postal du restaurant.
+     * @param string $country Le pays du restaurant.
+     * @param float|null $latitude La latitude du restaurant (peut être nulle).
+     * @param float|null $longitude La longitude du restaurant (peut être nulle).
+     * @param string|null $photoPath Le chemin de la nouvelle photo du restaurant (peut être nul).
+     * 
+     * @return bool Retourne `true` si la mise à jour est réussie, sinon `false` en cas d'échec.
+     */
     public function updateRestaurant(
         int $idRestaurants,
         int $owner_id,
@@ -206,17 +265,13 @@ class Restaurant
         ?float $longitude,
         ?string $photoPath
     ): bool {
-        // 1. Si la photo a été fournie, on insère d'abord la nouvelle photo dans la table 'photos'
         if ($photoPath) {
-            // Insertion de la photo dans la table 'photos'
             $stmt = $this->pdo->prepare("INSERT INTO photos (photo_path) VALUES (:photo_path)");
             $stmt->bindValue(':photo_path', $photoPath, \PDO::PARAM_STR);
             $stmt->execute();
 
-            // Récupérer l'ID de la photo insérée
             $photoId = $this->pdo->lastInsertId();
 
-            // 2. Mettre à jour la relation entre le restaurant et la photo dans la table 'restaurant_photos'
             $stmt = $this->pdo->prepare("REPLACE INTO restaurant_photos (restaurant_id, photo_id) 
                                          VALUES (:restaurant_id, :photo_id)");
             $stmt->bindValue(':restaurant_id', $idRestaurants, \PDO::PARAM_INT);
@@ -224,7 +279,6 @@ class Restaurant
             $stmt->execute();
         }
 
-        // 3. Mettre à jour les autres informations du restaurant
         $stmt = $this->pdo->prepare("
             UPDATE restaurants 
             SET owner_id = :owner_id, 
@@ -255,19 +309,30 @@ class Restaurant
         return $stmt->execute();
     }
 
+    /**
+     * Supprime un restaurant de la base de données en fonction de son identifiant.
+     *
+     * Cette méthode vérifie d'abord si un restaurant existe avec l'ID spécifié. Si le restaurant
+     * n'est pas trouvé, elle enregistre une erreur dans les logs et retourne `false`. Si le restaurant
+     * est trouvé, elle procède à la suppression du restaurant de la table `restaurants`.
+     * En cas d'erreur lors de la suppression, un message d'erreur SQL est enregistré dans les logs.
+     *
+     * @param int $idRestaurants L'identifiant du restaurant à supprimer.
+     * 
+     * @return bool Retourne `true` si la suppression du restaurant a été effectuée avec succès,
+     *              sinon `false` si le restaurant n'a pas été trouvé ou si une erreur est survenue.
+     */
     public function deleteRestaurantById(int $idRestaurants): bool
     {
-        // Vérification si le restaurant existe avant de le supprimer
         $stmt = $this->pdo->prepare("SELECT idRestaurants FROM restaurants WHERE idRestaurants = ?");
         $stmt->execute([$idRestaurants]);
         $restaurant = $stmt->fetch();
 
         if (!$restaurant) {
             error_log("Restaurant non trouvé avec l'ID : $idRestaurants");
-            return false;  // Si le restaurant n'existe pas, on retourne false
+            return false;
         }
 
-        // Si le restaurant existe, on procède à la suppression
         $stmt = $this->pdo->prepare("DELETE FROM restaurants WHERE idRestaurants = ?");
         if (!$stmt->execute([$idRestaurants])) {
             error_log("Erreur SQL [deleteRestaurantById] : " . implode(" | ", $stmt->errorInfo()));
@@ -277,6 +342,18 @@ class Restaurant
         return true;
     }
 
+    /**
+     * Récupère un restaurant à partir de son identifiant.
+     *
+     * Cette méthode cherche un restaurant dans la base de données en utilisant son identifiant (`idRestaurants`).
+     * Si un restaurant est trouvé, elle crée une instance de la classe `Restaurant` et lui attribue les valeurs récupérées 
+     * de la base de données. Les valeurs sont assignées aux propriétés correspondantes de l'objet `Restaurant`.
+     * Si aucun restaurant n'est trouvé, la méthode retourne `null`.
+     *
+     * @param int $idRestaurants L'identifiant du restaurant à récupérer.
+     * 
+     * @return Restaurant|null Retourne une instance de `Restaurant` si un restaurant est trouvé, sinon `null`.
+     */
     public function getRestaurantFindById(int $idRestaurants): ?Restaurant
     {
         $stmt = $this->pdo->prepare("SELECT * FROM restaurants WHERE idRestaurants = ?");
@@ -295,6 +372,15 @@ class Restaurant
         return null;
     }
 
+    /**
+     * Récupère tous les restaurants de la base de données.
+     *
+     * Cette méthode exécute une requête SQL pour obtenir toutes les lignes de la table `restaurants`.
+     * Elle crée une instance de l'objet actuel pour chaque ligne récupérée et lui attribue les valeurs 
+     * des colonnes correspondantes. Ensuite, elle retourne un tableau contenant tous les restaurants récupérés.
+     *
+     * @return Restaurant[] Un tableau d'instances de la classe `Restaurant` représentant tous les restaurants.
+     */
     public function getAllRestaurants(): array
     {
         $stmt = $this->pdo->query("SELECT * FROM restaurants");
@@ -315,7 +401,18 @@ class Restaurant
         return $restaurants;
     }
 
-    // Fonction de récupération des restaurants aléatoires
+    /**
+     * Récupère un nombre aléatoire de restaurants de la base de données.
+     *
+     * Cette méthode exécute une requête SQL pour obtenir un nombre aléatoire de restaurants
+     * à partir de la table `restaurants`. Elle crée une instance de l'objet actuel pour chaque
+     * ligne récupérée et lui attribue les valeurs des colonnes correspondantes. Ensuite, elle
+     * retourne un tableau contenant les restaurants récupérés.
+     *
+     * @param \PDO $pdo L'instance PDO pour exécuter la requête.
+     * 
+     * @return Restaurant[] Un tableau d'instances de la classe `Restaurant` représentant les restaurants récupérés.
+     */
     public static function getRandomRestaurants(\PDO $pdo): array
     {
         $query = "SELECT r.idRestaurants, 
@@ -355,6 +452,18 @@ class Restaurant
         return $restaurants;
     }
 
+    /**
+     * Récupère un nombre aléatoire de critiques de la base de données.
+     *
+     * Cette méthode exécute une requête SQL pour obtenir un nombre aléatoire de critiques
+     * à partir de la table `reviews`. Elle crée un tableau d'objets contenant les informations
+     * des critiques récupérées et les retourne.
+     *
+     * @param \PDO $pdo L'instance PDO pour exécuter la requête.
+     * @param int $limit Le nombre maximum de critiques à récupérer (par défaut 3).
+     * 
+     * @return array Un tableau d'objets contenant les informations des critiques récupérées.
+     */
     public static function getRandomReviews(\PDO $pdo, int $limit = 3): array
     {
         $query = "SELECT r.idReviews, 
@@ -399,84 +508,38 @@ class Restaurant
         return $reviews;
     }
 
+    /**
+     * Récupère les étoiles correspondant à une note donnée.
+     *
+     * Cette méthode prend une note (rating) en entrée et retourne une chaîne de caractères
+     * représentant les étoiles (pleines, vides et demi-étoiles) en fonction de la note.
+     *
+     * @param float $rating La note à convertir en étoiles.
+     * 
+     * @return string Une chaîne de caractères contenant les étoiles correspondantes à la note.
+     */
     public static function getStars($rating)
     {
         $fullStars = floor($rating);
-        $halfStar = ($rating - $fullStars) >= 0.5 ? '⯪' : ''; // Demi-étoile
+        $halfStar = ($rating - $fullStars) >= 0.5 ? '⯪' : '';
         $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
 
         return str_repeat('★', $fullStars) . $halfStar . str_repeat('☆', $emptyStars);
     }
 
-    // RESERVATION
-    public function getReservation()
-    {
-        $pdo = DbConnect::getPDO();
-        $slots = [];
-
-        // Créneaux du midi (12h00 - 14h00)
-        for ($hour = 12; $hour < 14; $hour++) {
-            foreach (["00", "30"] as $minute) {
-                $slots[] = sprintf('%02d:%s', $hour, $minute);
-            }
-        }
-
-        // Créneaux du soir (19h00 - 22h00)
-        for ($hour = 19; $hour < 22; $hour++) {
-            foreach (["00", "30"] as $minute) {
-                $slots[] = sprintf('%02d:%s', $hour, $minute);
-            }
-        }
-
-        return $slots;
-    }
-
-    public function bookSlot($restaurantId, $userId, $date, $time)
-    {
-        $query = "INSERT INTO reservations (restaurant_id, user_id, date, time) VALUES (:restaurantId, :userId, :date, :time)";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->bindValue(':restaurantId', $restaurantId, \PDO::PARAM_INT);
-        $stmt->bindValue(':userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue(':date', $date, \PDO::PARAM_STR);
-        $stmt->bindValue(':time', $time, \PDO::PARAM_STR);
-        return $stmt->execute();
-    }
-
-    // public function getReservationById($id)
-    // {
-    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE id = ?");
-    //     $stmt->execute([$id]);
-    //     return $stmt->fetch(\PDO::FETCH_ASSOC);
-    // }
-    // public function getReservationsByRestaurantId($restaurantId)
-    // {
-    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE restaurant_id = ?");
-    //     $stmt->execute([$restaurantId]);
-    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    // }
-    // public function getReservationsByUserId($userId)
-    // {
-    //     $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE user_id = ?");
-    //     $stmt->execute([$userId]);
-    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    // }
-    // public function createReservation($restaurantId, $userId, $date, $time)
-    // {
-    //     $stmt = $this->pdo->prepare("INSERT INTO reservations (restaurant_id, user_id, date, time) VALUES (?, ?, ?, ?)");
-    //     return $stmt->execute([$restaurantId, $userId, $date, $time]);
-    // }
-    // public function updateReservation($id, $restaurantId, $userId, $date, $time)
-    // {
-    //     $stmt = $this->pdo->prepare("UPDATE reservations SET restaurant_id = ?, user_id = ?, date = ?, time = ? WHERE id = ?");
-    //     return $stmt->execute([$restaurantId, $userId, $date, $time, $id]);
-    // }
-    // public function deleteReservation($id)
-    // {
-    //     $stmt = $this->pdo->prepare("DELETE FROM reservations WHERE id = ?");
-    //     return $stmt->execute([$id]);
-    // }
-
-
+    /**
+     * Upload une photo de restaurant.
+     *
+     * Cette méthode gère le téléchargement d'une photo pour un restaurant spécifique.
+     * Elle vérifie si le fichier a été téléchargé sans erreur, valide le type de fichier,
+     * et déplace le fichier téléchargé vers un répertoire cible. Si tout se passe bien,
+     * elle retourne le chemin du fichier cible.
+     *
+     * @param int $restaurantId L'identifiant du restaurant.
+     * @param array $file Le tableau contenant les informations sur le fichier téléchargé.
+     * 
+     * @return string Le chemin du fichier cible après téléchargement.
+     */
     public function uploadPhoto($restaurantId, $file)
     {
         if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -502,6 +565,20 @@ class Restaurant
     }
 
     // upload restaurants photos
+
+    /**
+     * Télécharge une photo de restaurant et l'associe à un utilisateur.
+     *
+     * Cette méthode permet de télécharger une image pour un restaurant en vérifiant que le fichier respecte certaines conditions
+     * (type d'image autorisé, taille maximale, et existence du fichier). Elle déplace ensuite l'image dans un répertoire dédié,
+     * enregistre le chemin de l'image dans la base de données, puis associe la photo au restaurant via une relation dans la table
+     * `restaurant_photos`.
+     *
+     * @param int $userId L'identifiant de l'utilisateur (restaurant) auquel la photo doit être associée.
+     * @param array $file Les informations du fichier téléchargé, comme 'name', 'type', 'size', etc.
+     * 
+     * @return string Un message indiquant le résultat de l'opération (succès ou erreur).
+     */
     public function uploadRestaurantPhoto($userId, $file)
     {
         if (!isset($file['name']) || empty($file['name'])) {
@@ -548,6 +625,20 @@ class Restaurant
     }
 
     // upload restaurants photos
+
+    /**
+     * Télécharge une photo de plat et l'associe à un plat dans la base de données.
+     *
+     * Cette méthode permet de télécharger une image pour un plat en vérifiant que le fichier respecte certaines conditions
+     * (type d'image autorisé, taille maximale, et existence du fichier). Elle déplace ensuite l'image dans un répertoire dédié,
+     * enregistre le chemin de l'image dans la base de données, puis associe la photo au plat via une relation dans la table
+     * `dishes_photos`.
+     *
+     * @param int $userId L'identifiant du plat auquel la photo doit être associée.
+     * @param array $file Les informations du fichier téléchargé, comme 'name', 'type', 'size', etc.
+     * 
+     * @return string Un message indiquant le résultat de l'opération (succès ou erreur).
+     */
     public function uploadDishPhoto($userId, $file)
     {
         if (!isset($file['name']) || empty($file['name'])) {

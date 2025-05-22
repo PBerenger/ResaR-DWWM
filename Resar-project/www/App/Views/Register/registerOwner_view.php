@@ -16,12 +16,12 @@ ob_start();
         <!-- Section Informations Personnelles -->
         <div class="section section-personnel">
             <h3>Vos informations personnelles</h3>
-            <input type="text" name="prenom" placeholder="Prénom" value="Res" required>
-            <input type="text" name="nom" placeholder="Nom" value="Tau" required>
-            <input type="email" name="email" placeholder="Email" value="res.tau@gmail.com" required>
-            <input type="tel" name="telephone" pattern="[0-9]{10}" maxlength="10" placeholder="Votre téléphone" value="0123456789" required>
-            <input type="password" name="password" placeholder="Mot de passe" value="Password@456" required>
-            <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" value="Password@456" required>
+            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="text" name="nom" placeholder="Nom" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="tel" name="telephone" pattern="[0-9]{10}" maxlength="10" placeholder="Votre téléphone" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" required>
             <div class="button-container">
                 <button type="button" class="next-btn" onclick="showSection('restaurant')">Suivant</button>
             </div>
@@ -30,11 +30,11 @@ ob_start();
         <!-- Section Informations Restaurant -->
         <div class="section section-restaurant">
             <h3>Informations sur votre restaurant</h3>
-            <input type="text" name="nomRestaurant" placeholder="Nom du restaurant" value="ResTauto" required>
-            <input type="text" name="address" placeholder="Adresse" value="12 place des roues" required>
-            <input type="text" name="city" placeholder="Ville" value="Lille" required>
-            <input type="text" name="zip_Code" placeholder="Code postal" value="59000" required>
-            <input type="text" name="country" placeholder="Pays" value="france" required>
+            <input type="text" name="nomRestaurant" placeholder="Nom du restaurant" required>
+            <input type="text" name="address" placeholder="Adresse" required>
+            <input type="text" name="city" placeholder="Ville" required>
+            <input type="text" name="zip_Code" placeholder="Code postal" required>
+            <input type="text" name="country" placeholder="Pays" required>
             <input type="hidden" name="role" value="3">
             <textarea name="description" placeholder="Décrivez votre restaurant"></textarea>
             <div class="button-container">

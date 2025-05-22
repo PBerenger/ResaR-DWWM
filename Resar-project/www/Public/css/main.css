@@ -15,6 +15,7 @@
 @import url('Restaurants/restaurants.css');
 @import url('Restaurants/restaurant-details.css');
 @import url('Restaurants/registerRestaurant.css');
+@import url('Restaurants/restaurantReservation.css');
 
 /* Users */
 @import url('users/profilUser.css');

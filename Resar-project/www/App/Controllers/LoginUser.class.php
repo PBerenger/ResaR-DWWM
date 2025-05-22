@@ -24,7 +24,6 @@ class LoginUser
                 $pdo = DbConnect::getPDO();
 
                 try {
-                    // Requête corrigée pour récupérer l'utilisateur et ses rôles
                     $stmt = $pdo->prepare("
                         SELECT u.idUsers, u.password, r.roleName
                         FROM users u
@@ -37,11 +36,10 @@ class LoginUser
                     $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
                     if (!$results) {
-                        // Aucun utilisateur trouvé
                         $errorMessage = "Email ou mot de passe incorrect.";
                     } else {
-                        $user = $results[0]; // Les informations utilisateur
-                        $roles = array_column($results, 'roleName'); // Récupère tous les rôles
+                        $user = $results[0];
+                        $roles = array_column($results, 'roleName');
 
                         if (password_verify($password, $user['password'])) {
                             if (empty($_SESSION['csrf_token'])) {
@@ -49,7 +47,7 @@ class LoginUser
                             }
 
                             $_SESSION['user_id'] = $user['idUsers'];
-                            $_SESSION['roles'] = $roles; // Stocke tous les rôles
+                            $_SESSION['roles'] = $roles;
                             $_SESSION['success_message'] = "Connexion réussie ! Bienvenue.";
 
                             header("Location: ?page=success");
@@ -59,7 +57,6 @@ class LoginUser
                         }
                     }
                 } catch (PDOException $e) {
-                    // Gestion des erreurs PDO
                     $errorMessage = "Erreur de connexion : " . $e->getMessage();
                 }
             }

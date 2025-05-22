@@ -17,7 +17,6 @@ class UpdateUser
         $errorMessage = '';
         $pdo = DbConnect::getPDO();
 
-        // Vérifie si un ID est passé dans l'URL pour la modification d'un utilisateur spécifique
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $userId = $_GET['id'];
         } elseif (isset($_SESSION['user_id'])) {
@@ -28,7 +27,6 @@ class UpdateUser
             exit;
         }
 
-        // Charger l'utilisateur
         $user = (new User($pdo))->findUserById($userId);
 
         if (!$user) {
@@ -39,12 +37,10 @@ class UpdateUser
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Nettoyage des entrées
                 $firstName = htmlspecialchars(trim($postdata['firstName']));
                 $lastName = htmlspecialchars(trim($postdata['lastName']));
                 $phone = htmlspecialchars(trim($postdata['phone']));
 
-                // Validation des champs
                 if (empty($firstName) || empty($lastName) || empty($phone)) {
                     $errorMessage = "Tous les champs doivent être remplis.";
                 } elseif (strlen($firstName) > 50 || strlen($lastName) > 50) {
@@ -54,7 +50,6 @@ class UpdateUser
                 }
 
                 if (empty($errorMessage)) {
-                    // Mise à jour des informations
                     if ($_SESSION['role'] === 'admin' && isset($role)) {
                         $stmt = $pdo->prepare("UPDATE users SET firstName = ?, lastName = ?, phone = ?, roles = ? WHERE idUsers = ?");
                         $stmt->execute([$firstName, $lastName, $phone, $role, $userId]);
@@ -65,7 +60,6 @@ class UpdateUser
 
                     $_SESSION['success_message'] = "Mise à jour réussie !";
 
-                    // Redirection selon le rôle
                     if ($_SESSION['role'] === 'admin') {
                         header("Location: ?page=admin-home");
                     } elseif ($_SESSION['role'] === 'owner') {
@@ -73,7 +67,7 @@ class UpdateUser
                     } else {
                         header("Location: ?page=profil-user");
                     }
-                    
+
                     exit;
                 }
             } catch (Exception $e) {

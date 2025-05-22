@@ -59,7 +59,6 @@ if (session_status() === PHP_SESSION_NONE) {
                             </button>
                         <?php endif; ?>
                     <?php endif; ?>
-
                 </li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
@@ -98,8 +97,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <form method="POST" action="?page=login-user">
             <input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : '' ?>">
-            <input type="email" name="email" placeholder="Email" value="bou.ba@gmail.com" required>
-            <input type="password" name="password" placeholder="Votre mot de passe" value="Password@123" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Votre mot de passe" required>
             <button type="submit" name="loginSubmit">Se connecter</button>
         </form>
 
@@ -123,11 +122,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <form method="POST" action="?page=register-user">
             <input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : '' ?>">
-            <input type="text" name="prenom" placeholder="Prénom" value="Bou" required>
-            <input type="text" name="nom" placeholder="Nom" value="Ba" required>
-            <input type="email" name="email" placeholder="Email" value="bou.ba@gmail.com" required>
-            <input type="password" name="password" placeholder="Votre mot de passe" value="Password@123" required>
-            <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" value="Password@123" required>
+            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="text" name="nom" placeholder="Nom" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Votre mot de passe" required>
+            <input type="password" name="passwordRepeat" placeholder="Confirmation du mot de passe" required>
             <input type="hidden" name="role" value="2">
             <button type="submit" name="userSubmit">S'inscrire</button>
         </form>

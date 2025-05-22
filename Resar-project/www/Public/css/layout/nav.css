@@ -205,6 +205,11 @@ header nav .search-bar-nav input {
     background-color: var(--primary-color);
     z-index: 1000;
   }
+  .nav-links li {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
   .nav-links #btn-general {
     background-color: var(--secondary-color);
     margin: 0;

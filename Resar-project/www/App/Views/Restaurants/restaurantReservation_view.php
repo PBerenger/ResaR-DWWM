@@ -2,34 +2,54 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 ob_start();
 ?>
 
-<h2>RESERVEZ CHEZ <?= htmlspecialchars($restaurant->getName()); ?></h2>
-<p>Téléphone : <?= htmlspecialchars($restaurant->getPhone()); ?></p>
-<p>Adresse : <?= htmlspecialchars($restaurant->getAddress()); ?></p>
-<p>Code postal : <?= htmlspecialchars($restaurant->getZipCode()); ?> | Ville : <?= htmlspecialchars($restaurant->getCity()); ?></p>
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success">
+        <?= htmlspecialchars($_SESSION['success_message']) ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
 
-<form method="post">
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-error">
+        <?= htmlspecialchars($_SESSION['error_message']) ?>
+    </div>
+    <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
+
+<h2>Réservation pour <?= htmlspecialchars($restaurant->getName()); ?></h2>
+
+<form action="index.php?page=restaurant-reservation&id=<?= urlencode($restaurant->getId()); ?>" method="post" class="reservation-form">
     <label for="date">Date :</label>
-    <input type="date" name="date" id="date" value="<?= $date ?>" required onchange="this.form.submit()">
+    <input type="date" name="date" required>
 
-    <label for="time">Horaires disponibles :</label>
-    <select name="time" id="time" required>
-        <?php foreach ($availableSlots as $slot): ?>
-            <option value="<?= $slot ?>"><?= $slot ?></option>
-        <?php endforeach; ?>
-    </select>
+    <label for="heure">Choisissez une heure :</label>
+    <div class="checkbox-heures">
+        <?php
+        $start = new DateTime('18:00');
+        $end = new DateTime('22:00');
 
-    <input type="hidden" name="restaurantId" value="<?= $restaurantId ?>">
-    <input type="hidden" name="userId" value="<?= $_SESSION['user_id'] ?? 0 ?>">
+        while ($start <= $end) {
+            $heure = $start->format('H:i');
+            echo '<label><input type="radio" name="heure" value="' . $heure . '"> ' . $heure . '</label><br>';
+            $start->modify('+30 minutes');
+        }
+        ?>
+    </div>
 
-    <button type="submit" name="reserve">Réserver</button>
+    <label for="nombre_personnes">Nombre de personnes :</label>
+    <input type="number" name="nombre_personnes" min="1" max="20" required>
+
+    <input type="submit" name="submit_reservation" value="Réserver">
 </form>
 
 
+<script src="./scripts/Restaurants/reservation.js"></script>
 
 <?php
 $content = ob_get_clean();
-$pageTitle = "Réservation - ResaR";
-require __DIR__ .  "/../layout.php";
+$pageTitle = "Réservation - " . htmlspecialchars($restaurant->getName());
+require "../App/Views/layout.php";
